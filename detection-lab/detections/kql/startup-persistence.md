@@ -8,7 +8,7 @@ source:
 last_updated: 2025-10-11     
 severity: medium
 confidence: medium      
-notes: Prototype with minimal lab trims.
+notes: Detects file drops/execution via Startup folders. Lab trims; convert to signer/path/rep allowlists for prod.
 ```
 ---
 
