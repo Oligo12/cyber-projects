@@ -1,4 +1,4 @@
-# cyber-projects
+# Cybersecurity Projects
 **Author:** Nikola Marković  
 **Status:** ongoing                                                                                                                              
 **Last updated:** 2025-10-15  
