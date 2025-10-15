@@ -1,7 +1,7 @@
 ```yaml
 title: Startup-folder persistence (drop OR execute) 
 status: prototype (PoC)
-mitre: T1547.001   
+mitre: T1547.001 (Boot or Logon Autostart Execution)
 source:
   - Sysmon EID 11: FileCreate
   - Sysmon EID 1: ProcessCreate   
