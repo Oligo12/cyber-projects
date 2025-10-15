@@ -6,7 +6,7 @@
 **Email:** nikola.z.markovic@pm.me                                                                                                 
 **LinkedIn:** https://www.linkedin.com/in/nikolazmarkovic/                                                                                                        
 
-## 1) Summary
+## Summary
 Implemented Microsoft Sentinel playbook -> secure webhook -> Velociraptor API to terminate a target PID on alert. Demonstrates EDR-like remote response. Memory capture and file collection are planned.
 
 ## Notes
