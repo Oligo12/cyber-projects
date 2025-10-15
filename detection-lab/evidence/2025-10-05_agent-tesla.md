@@ -1,6 +1,7 @@
 # Agent Tesla - lab run (2025-10-05)
 
-[Back to Detection Lab](../README.md)
+[Back to Detection Lab](../README.md)                                                                                                          
+[Back to Main README](../../README.md)
 
 **Summary:** 
 - Alerts fired on:
