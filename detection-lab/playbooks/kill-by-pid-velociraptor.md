@@ -1,6 +1,7 @@
-## Kill by PID (Sentinel -> Webhook -> Velociraptor)
+# Kill by PID (Sentinel -> Webhook -> Velociraptor)
 
-**What it does:** On a Sentinel alert, extract a PID and POST it to a Velociraptor webhook to terminate the process.
+## What it does
+On a Sentinel alert, extract a PID and POST it to a Velociraptor webhook to terminate the process.
 
 ## Flow (as implemented)
 1) **Microsoft Sentinel alert** - webhook trigger fires on new alert.
