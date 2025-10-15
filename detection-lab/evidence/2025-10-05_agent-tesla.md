@@ -1,9 +1,6 @@
 # Agent Tesla - lab run (2025-10-05)
 
-[Back to Detection Lab](../README.md)                                                                                                          
-[Back to Main README](../../README.md)
-
-**Summary:** 
+## Summary 
 - Alerts fired on:
   - [AppData-Local first-seen EXE (new folder)](../detections/kql/appdata-local-new-exe.md)
   - [Startup-folder persistence (drop OR execute)](../detections/kql/startup-persistence.md)
