@@ -1,7 +1,7 @@
 ```yaml
 title: UAC elevation via script hosts (attempt + success)
 status: prototype (PoC)
-mitre: T1548.002
+mitre: T1548.002 (Abuse Elevation Control Mechanism)
 source:
   - "Windows 4104: PowerShell ScriptBlock"
   - "Sysmon EID 1: ProcessCreate"
