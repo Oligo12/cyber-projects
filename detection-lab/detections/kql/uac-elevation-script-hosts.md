@@ -3,9 +3,9 @@ title: UAC elevation via script hosts (attempt + success)
 status: prototype (PoC)
 mitre: T1548.002 (Abuse Elevation Control Mechanism)
 source:
-  - "Windows 4104: PowerShell ScriptBlock"
-  - "Sysmon EID 1: ProcessCreate"
-  - "Windows 4672: Special privileges assigned"
+  - Windows 4104: PowerShell ScriptBlock
+  - Sysmon EID 1: ProcessCreate
+  - Windows 4672: Special privileges assigned
 last_updated: 2025-10-12
 severity: high
 confidence: medium
