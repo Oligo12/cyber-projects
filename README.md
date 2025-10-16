@@ -1,7 +1,7 @@
 # Cybersecurity Projects
 **Author:** Nikola Marković  
 **Status:** ongoing                                                                                                                              
-**Last updated:** 2025-10-15  
+**Last updated:** 2025-10-16  
 **Repo:** https://github.com/Oligo12/cyber-projects/                                                                   
 **Email:** nikola.z.markovic@pm.me                                                                                                 
 **LinkedIn:** https://www.linkedin.com/in/nikolazmarkovic/  
