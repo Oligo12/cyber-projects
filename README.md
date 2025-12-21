@@ -11,7 +11,7 @@ Two ongoing, separate labs:
 - [**malware-analysis/**](/malware-analysis) - isolated lab for learning manual Windows malware analysis (e.g., ProcMon, Wireshark). I document behaviors/TTPs per sample.
 - [**detection-lab/**](/detection-lab) - small Sentinel-focused lab where I **drop known components from the analyses** to search logs and prototype **KQL detections** (plus basic response). It’s separate because AMA/agents can break after VM snapshot restores; this lab is manually remediated and kept "good enough" for hunting known behaviors.
 - [**vulnerability-management-openvas-lab/**](/vulnerability-management-openvas-lab) - mini lab demonstrating vulnerability scanning, triage, validation, prioritization, and remediation using OpenVAS (Greenbone). Focused on analyst judgment and communication rather than exploit proof.
-- [**legacy/Legacy-Sentinel-Lab**](legacy/Legacy-Sentinel-Lab.pdf) - my first Sentinel-only lab; the initial encounter with Sentinel.
+- [**Legacy-Sentinel-Lab**](legacy/Legacy-Sentinel-Lab.pdf) - my first Sentinel-only lab; the initial encounter with Sentinel.
 
 Current samples analyzed: Agent Tesla, QuasarRAT, WannaCry.
 
