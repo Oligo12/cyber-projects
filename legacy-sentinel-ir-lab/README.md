@@ -52,6 +52,6 @@ This lab represents an **early-stage Sentinel and incident response implementati
 - Automation is limited to basic analyst notification (Discord alerts).
 
 For examples of **more advanced detection engineering, alert correlation, and automation**, see:
-- **[Detection Lab](detection-lab)**
+- **[Detection Lab](../detection-lab)**
 
 This reflects my progression from foundational SOC workflows to more advanced blue-team detection engineering and incident response work.
