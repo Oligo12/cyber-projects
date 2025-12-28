@@ -105,8 +105,7 @@ let s_exec =
         or proc_lc matches regex @"\\rundll32\.exe$"
         or proc_lc matches regex @"\\javaw?\.exe$"
     // Evidence of script path or Startup path on the cmdline
-    | where cmd_lc has_any (".vbs",".vbe",".ps1",".js",".jse",".wsf",".wsh",".hta",".bat",".cmd",".lnk",".scr",".url")
-        or cmd_lc has @"\microsoft\windows\start menu\programs\startup\"
+    | where cmd_lc has @"\microsoft\windows\start menu\programs\startup\"
         or cmd_lc has @"\programdata\microsoft\windows\start menu\programs\startup\"
     // Typical installer/updater noise (expand with signer/parent checks)
     | where not(cmd_lc contains "azcmagent" 
