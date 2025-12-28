@@ -3,11 +3,10 @@ title: AppData-Local first-seen EXE (new folder)
 status: prototype (PoC)
 mitre:
   - T1204 (User Execution)
-  - T1105 (Ingress Tool Transfer)
 source:
   - Sysmon EID 11: FileCreate
   - Sysmon EID 1: ProcessCreate
-last_updated: 2025-10-11
+last_updated: 2025-12-28
 severity: medium
 confidence: medium
 notes: Flags first EXE created under AppData\Local\<folder> (10m window) and enriches with nearest ProcessCreate by PID; lab allowlists only.
@@ -37,7 +36,12 @@ let fc = Sysmon_11_FileCreate()
 
 // Candidate EXEs created under AppData\Local\<folder>
 let exes = fc
-| where path has @"\appdata\local\" and tolower(file_ext) == "exe"
+| extend ext = iff(
+      isempty(tostring(file_ext)),
+      tostring(extract(@"\.([a-z0-9]{1,8})$", 1, path)),
+      tolower(tostring(file_ext))
+  )
+| where path has @"\appdata\local\" and ext == "exe"
 | extend parent_folder = extract(@"(.*\\appdata\\local\\[^\\]+)\\", 1, path)
 | where isnotempty(parent_folder);
 
