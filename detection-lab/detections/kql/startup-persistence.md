@@ -5,7 +5,7 @@ mitre: T1547.001 (Boot or Logon Autostart Execution)
 source:
   - Sysmon EID 11: FileCreate
   - Sysmon EID 1: ProcessCreate   
-last_updated: 2025-10-11     
+last_updated: 2025-1-28                   
 severity: medium
 confidence: medium      
 notes: Detects file drops and interpreter-based execution from Startup folders. Lab trims; convert to signer/path/reputation allowlists for prod.
