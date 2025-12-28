@@ -6,7 +6,7 @@ source:
   - Windows 4104: PowerShell ScriptBlock
   - Sysmon EID 1: ProcessCreate
   - Windows 4672: Special privileges assigned
-last_updated: 2025-10-12
+last_updated: 2025-12-28
 severity: high
 confidence: medium
 notes: Lab-oriented; detects explicit RunAs attempts and correlates them with nearby privileged logon signals (4672); does not assert confirmed elevation success.
