@@ -1,6 +1,6 @@
-## Incident Response Timeline - SnakeKeylogger (Microsoft Sentinel)
+# Incident Response Timeline - SnakeKeylogger (Microsoft Sentinel)
 
-### Incident Summary
+## Incident Summary
 - **Incident Type:** Fileless malware loader + keylogger execution
 - **Malware Family:** [SnakeKeylogger](../malware-analysis/SnakeKeylogger/Report.md)
 - **Initial Vector:** User-executed PowerShell loader script
