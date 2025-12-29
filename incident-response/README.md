@@ -1,4 +1,10 @@
 # Incident Response Case Studies
+**Author:** Nikola Marković  
+**Status:** ongoing                                                                                                                              
+**Last updated:** 2025-12-29          
+**Repo:** https://github.com/Oligo12/cyber-projects/                                                                   
+**Email:** nikola.z.markovic@pm.me                                                                                                 
+**LinkedIn:** https://www.linkedin.com/in/nikolazmarkovic/  
 
 This folder contains incident response timelines documenting **alert triage, investigation, validation, and response** using Microsoft Sentinel.
 
