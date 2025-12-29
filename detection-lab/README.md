@@ -9,10 +9,10 @@
 [Back to Main README](../README.md)
 
 ## Summary
-Implemented Microsoft Sentinel playbook -> secure webhook -> Velociraptor API to terminate a target PID on alert. Demonstrates EDR-like remote response. Memory capture and file collection are planned.
+Implemented Microsoft Sentinel playbook -> secure webhook -> Velociraptor API to terminate a target PID on alert. Demonstrates remote response workflows in a lab environment. Memory capture and file collection are planned.
 
 ## Notes
-- Lab-only. Learning/prototype content. Velociraptor used as a makeshift-EDR for Logic App automation.
+- Lab-only learning and prototype content. Velociraptor is used to simulate remote response actions via Logic App automation.
 - This is a long-term lab and will be updated as I advance (e.g., adding other log sources, analyzing more malware samples).
 - Paths in this README are **relative** to this folder.
 
