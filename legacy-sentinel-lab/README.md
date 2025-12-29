@@ -9,8 +9,6 @@
 
 ---
 
-This project documents a **full incident response case study** built on top of a Microsoft Sentinel detection lab.
-
 The goal of this lab is to demonstrate **how alerts are investigated, scoped, and responded to**, not just how detections are created.
 
 ---
@@ -33,8 +31,8 @@ The goal of this lab is to demonstrate **how alerts are investigated, scoped, an
 - **[Legacy-Sentinel-Lab](Legacy-Sentinel-Lab.pdf)**  
   Architecture overview, log sources, detection rules, and simulated attack flow.
 
-- **[incident-response-timeline](incident-response-timeline.md)**  
-  An incident response timeline documenting analyst actions, decisions, and remediation steps for a simulated critical incident.
+- **[Incident Response Case Study](../incident-response/legacy-sentinel-lab-attack-chain.md)**  
+  The incident response timeline for this lab.
 
 ---
 
