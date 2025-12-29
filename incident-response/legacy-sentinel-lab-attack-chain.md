@@ -19,7 +19,7 @@ This incident was simulated in a controlled lab environment to demonstrate enter
 - pfSense firewall and Suricata for network visibility
 - Internal Linux VM acting as simulated attacker / C2 endpoint
 
-(Full architecture and detection details are documented in [Legacy-Sentinel-Lab](,,/legacy-sentinel-lab/Legacy-Sentinel-Lab.pdf).)
+(Full architecture and detection details are documented in [Legacy-Sentinel-Lab](../legacy-sentinel-lab/Legacy-Sentinel-Lab.pdf).)
 
 ---
 
