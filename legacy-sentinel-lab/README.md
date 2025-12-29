@@ -43,13 +43,13 @@ The incident was detected early via persistence telemetry and investigated using
 ---
 
 ## Lab Scope & Progression Note
-This lab represents an **early-stage Sentinel and incident response implementation** created during my initial learning phase.
+This lab represents a **foundational Sentinel and incident response implementation** created during my early learning phase.
 
-- Alert correlation and advanced automation were intentionally minimal.
-- Detections focus on clarity and visibility rather than production-scale tuning.
-- Automation is limited to basic analyst notification (Discord alerts).
+- Detections prioritize clarity and investigative visibility.
+- Alert correlation and automation are intentionally limited to basic analyst notification.
+- The focus is on end-to-end SOC workflows rather than production-scale tuning.
 
-For examples of **more advanced detection engineering, alert correlation, and automation**, see:
+For examples of more advanced detection engineering, correlation, and automation, see:
 - **[Detection Lab](../detection-lab)**
 
-This reflects my progression from foundational SOC workflows to more advanced blue-team detection engineering and incident response work.
+This lab documents my progression from foundational SOC investigation workflows to more advanced blue-team detection and response work.
