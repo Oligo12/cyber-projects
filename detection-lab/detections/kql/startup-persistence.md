@@ -22,7 +22,7 @@ Attackers abuse the Startup folders to auto-run scripts/shortcuts at logon. Catc
 ## Signal logic
 - **startup_drop** - New script/shortcut created in a Startup path (e.g., `.vbs`, `.ps1`, `.lnk`, `.url`).
 - **startup_exec** - Script/host interpreters (wscript/cscript/powershell/mshta/cmd/rundll32/java) launching a script **or** referencing a Startup path.
-- 
+  
 ---
 
 ## KQL
