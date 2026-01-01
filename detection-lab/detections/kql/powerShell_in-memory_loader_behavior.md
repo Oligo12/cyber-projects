@@ -16,7 +16,7 @@ notes: Generalized "PS loader" detector. Fires when multiple loader-like indicat
 
 ## Summary
 
-Detects suspicious PowerShell script blocks that look like malware loaders: obfuscation + dynamic execution / reflection, often used by fileless stagers (including SnakeKeylogger’s chain), but generalized for production.
+Detects suspicious PowerShell script blocks that look like malware loaders: obfuscation + dynamic execution / reflection, often used by fileless stagers (including SnakeKeylogger’s chain), but generalized with production environments in mind.
 
 ## Why this matters
 PowerShell is one of the most abused execution environments on Windows because it enables **fileless execution**, **in-memory payload loading**, and **living-off-the-land** tradecraft without dropping obvious artifacts to disk.
