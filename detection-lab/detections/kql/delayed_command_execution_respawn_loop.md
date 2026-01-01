@@ -265,7 +265,7 @@ let trigger_b =
          and prev(img_lc) == img_lc
          and prev(cmd_lc) == cmd_lc
          and prev(window_start_utc) == window_start_utc)
-    // FIX: simpler + safer gap calc
+    // NOTE: simplified gap calculation to avoid edge cases
     | extend gap = time_generated_utc - prev_t
     | where same_key and gap between (min_gap .. max_gap)
     | summarize
