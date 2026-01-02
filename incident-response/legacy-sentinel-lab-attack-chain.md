@@ -7,7 +7,7 @@
 - **Severity:** Critical
 - **Status:** Contained (lab simulation)
 
-This incident was simulated in a controlled lab environment to demonstrate enterprise-style detection, investigation, and response workflows using Microsoft Sentinel.
+This incident was simulated in a controlled lab environment to demonstrate detection, investigation, and response workflows using Microsoft Sentinel.
 
 ---
 
