@@ -14,6 +14,6 @@ Current labs and projects:
 - [**incident-response/**](/incident-response) - incident response case studies linking malware behavior, Sentinel detections, and analyst actions (triage -> containment -> recovery).
 - [**legacy-sentinel-ir-lab/**](legacy-sentinel-ir-lab) - Foundational Microsoft Sentinel lab (architecture + detections). The associated IR case study is in [**incident-response/**](/incident-response).
 
-Current samples analyzed: SnakeKeylogger, Agent Tesla, QuasarRAT, WannaCry.
+Current samples analyzed: SnakeKeylogger, Agent Tesla, Pulsar/Quasar RAT, WannaCry.
 
 License: **The Unlicense** (public domain).
