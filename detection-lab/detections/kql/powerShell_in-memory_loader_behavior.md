@@ -73,6 +73,17 @@ Basic allowlisting is applied to suppress known administrative tooling, but the 
 
 ## KQL
 ```kusto
+// TUNING NOTE / LIMITATION:
+// PowerShell EID 4104 may split a single script block across multiple events
+// (due to ScriptBlockText size limits). This rule currently scores indicators
+// per individual 4104 event, meaning indicators spread across multiple chunks
+// of the same ScriptBlockId may not reach minScore and can cause false negatives.
+//
+// FUTURE TUNING:
+// Quick fix: roll up indicators by ScriptBlockId (max() per indicator) to handle indicators split across chunks.
+// Better but heavier fix: reconstruct full ScriptBlockText (ScriptBlockId + MessageNumber ordering) before scoring to also
+// catch tokens split across chunk boundaries (e.g., "IEX" split as "IE" + "X").
+
 let minScore = 2; // tuning: increase to 3+ in noisy environments
 let minBase64Len = 200;
 
