@@ -1,4 +1,8 @@
 # Cybersecurity Projects
+
+**Current Focus (Q1 2026):**
+- Security-relevant Windows internals deep dive
+  
 **Author:** Nikola Marković  
 **Status:** ongoing                                                                                                                              
 **Last updated:** 2025-12-29          
