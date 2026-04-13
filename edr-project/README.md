@@ -79,7 +79,7 @@ Technique classification:
 
 The sensor was validated against a real SnakeKeylogger sample - a multi-stage fileless malware that uses PowerShell → .NET reflection → process hollowing into `aspnet_compiler.exe`.
 
-Full malware analysis: [SnakeKeylogger Report](../../malware-analysis/SnakeKeylogger/Report.md)
+Full malware analysis: [SnakeKeylogger Report](../malware-analysis/SnakeKeylogger/Report.md)
 
 ### What the sensor saw
 
