@@ -2,6 +2,7 @@
 
 **Current Focus (Q2 2026):**
 - Security-relevant Windows internals deep dive
+- Expanding into Linux and basic cloud security concepts
   
 **Author:** Nikola Marković  
 **Status:** ongoing                                                                                                                              
