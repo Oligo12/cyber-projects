@@ -5,9 +5,9 @@
 **Last updated:** 2026-04-12                                                                                                                                                
 **Version:** v1                                                                                                                                                
 
-A lightweight Windows EDR sensor built from scratch to detect process injection techniques (process hollowing, shellcode injection, remote thread creation) using a combination of kernel-mode callbacks and userland API hooking.
+A lightweight Windows EDR sensor built from scratch to detect process injection techniques (process hollowing, shellcode injection, remote thread creation) using kernel callbacks and userland API hooking.
 
-Built as a learning project to understand how commercial EDR products work under the hood - from kernel event collection through behavioral scoring to alert generation.
+Built as a learning project to understand how commercial EDR products work under the hood - from kernel telemetry collection to behavioral detection and alerting.
 
 ---
 
@@ -28,7 +28,7 @@ Built as a learning project to understand how commercial EDR products work under
 ┌────────────────────────────────────────▼─────────────────────────┐
 │                   USERLAND (EDRClient.exe + hook DLL)            │
 │                                                                  │
-│   Hook DLL (injected into new processes via CreateRemoteThread): │
+│   Hook DLL (injected into processes by the client):              │
 │    ► NtWriteVirtualMemory  ─┐                                    │
 │    ► VirtualProtectEx       ├─► IOCTL → driver → ring buffer     │
 │    ► NtResumeThread        ─┘                                    │
@@ -36,7 +36,7 @@ Built as a learning project to understand how commercial EDR products work under
 │  EDRClient.exe:                                                  │
 │    ► Reads events from kernel ring buffer                        │
 │    ► Maintains process table (PID, parent, image, privileges)    │
-│    ► Enriches thread events with VirtualQueryEx (MBI)            │
+│    ► Enriches thread events with VirtualQueryEx                  │
 │    ► Correlates handle + write + thread + protect + resume       │
 │    ► Score-based injection detection engine                      │
 │    ► Alerts on threshold (score ≥ 80)                            │
