@@ -28,7 +28,7 @@ Built as a learning project to understand how commercial EDR products work under
 ┌────────────────────────────────────────▼─────────────────────────┐
 │                   USERLAND (EDRClient.exe + hook DLL)            │
 │                                                                  │
-│  Hook DLL (injected into every new process via APC):             │
+│   Hook DLL (injected into new processes via CreateRemoteThread): │
 │    ► NtWriteVirtualMemory  ─┐                                    │
 │    ► VirtualProtectEx       ├─► IOCTL → driver → ring buffer     │
 │    ► NtResumeThread        ─┘                                    │
@@ -161,7 +161,7 @@ The base address `0x400000` is the default ImageBase for 32-bit .NET executables
 |-----------|----------|-----------|-------------|
 | **Kernel Driver** | C (WDM) | `driver.c`, `callbacks.c`, `events.c`, `utils.c`, `process_table.c` | Registers kernel callbacks (`PsSetCreateProcessNotifyRoutineEx`, `PsSetCreateThreadNotifyRoutine`, `PsSetLoadImageNotifyRoutine`, `ObRegisterCallbacks`) to collect process, thread, image load, and handle events. Stores events in a ring buffer and exposes them to userland via `IRP_MJ_READ`. Also accepts write/protect/resume events from the hook DLL via IOCTL. |
 | **Userland Client** (`EDRClient.exe`) | C++ | `EDRClient.cpp`, `detections.cpp`, `output.cpp`, `parser.cpp` | Reads events from the kernel ring buffer, maintains a process table (PID, parent, image path, command line, privileges), enriches thread events with `VirtualQueryEx` (memory region type/protection), and runs the score-based behavioral detection engine. Injects the hook DLL into new processes. |
-| **Hook DLL** | C++ | `inline_hook.cpp`, `dllmain.cpp` | Injected into target processes by the client via APC. Uses Zydis disassembler to place inline hooks on `NtWriteVirtualMemory`, `VirtualProtectEx`, and `NtResumeThread`. Hooked calls are forwarded to the kernel driver via IOCTL so the client can see cross-process memory writes, protection changes, and thread resumes that kernel callbacks alone can't observe. |
+| **Hook DLL** | C++ | `inline_hook.cpp`, `dllmain.cpp` | Injected into target processes by the client via CreateRemoteThread + LoadLibraryW. Uses Zydis disassembler to place inline hooks on `NtWriteVirtualMemory`, `VirtualProtectEx`, and `NtResumeThread`. Hooked calls are forwarded to the kernel driver via IOCTL so the client can see cross-process memory writes, protection changes, and thread resumes that kernel callbacks alone can't observe. |
 
 ---
 
@@ -171,7 +171,7 @@ The base address `0x400000` is the default ImageBase for 32-bit .NET executables
 - **No ETW** - relies entirely on kernel callbacks + inline hooks; no script-block or AMSI integration
 - **No disk/registry monitoring** - only detects in-memory injection, not persistence or file drops
 - **Allowlisting is basic** - currently matches process names only (e.g. `svchost.exe`, `explorer.exe`, `WerFault.exe`). A production sensor/future work would validate full image paths and code-signing certificates to prevent allowlist bypass via name spoofing.
-- **Hook DLL injection is APC-based** - can be detected and evaded by malware
+- **Hook DLL injection uses CreateRemoteThread** - a well-known injection vector that is easily detectable by other security tools and evadable by malware
 - **Single-host** - no central logging, no network telemetry
 - **WerFault noise** - crashed hollowed processes trigger WerFault handle opens that appear in telemetry
 - **Handle event deduplication** - `ObRegisterCallbacks` fires multiple times per logical action (process creation, DLL load, etc.); the scoring engine currently counts each one, which inflates scores for parent-child pairs. A production version would deduplicate by (src, dst) within a short window.
