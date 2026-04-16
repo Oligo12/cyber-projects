@@ -155,6 +155,66 @@ The base address `0x400000` is the default ImageBase for 32-bit .NET executables
 
 ---
 
+## Detection in Action: Unidentified Dropper (Explorer.exe Injection)
+
+The sensor was validated against a second real-world sample - a packed native 64-bit dropper (SHA256: `1c79d02819eade0c7cbc746a9667a5fdbf7bc773f264bb05a7832417ce67408c`) tagged by Triage sandbox as likely malicious, exhibiting Volume Shadow Copy deletion, Task Scheduler persistence, and process injection into `explorer.exe`.
+
+### What the sensor saw
+
+The dropper spawns, opens two handles to `explorer.exe` - first a broad handle with write, VM operation, and thread creation rights, then a second narrow handle requesting only thread creation - and creates a remote thread in a 4KB private executable region inside Explorer, all within ~10ms of process creation:
+
+```
+[12:16:44.165] PROC_CREATE  | img=sample.exe pid=3180 pimg=UNKNOWN ppid=4456
+                               cmd="C:\Users\MrLowIQ\Desktop\sample.exe"
+[12:16:44.175] HANDLE_OPEN  | src=sample.exe spid=3180 tgt=explorer.exe tpid=4456
+                               access=VM_WRITE|VM_OPERATION|CREATE_THREAD raw=0x0000143A type=write
+[12:16:44.175] HANDLE_OPEN  | src=sample.exe spid=3180 tgt=explorer.exe tpid=4456
+                               access=CREATE_THREAD raw=0x00001402 type=thread
+[ENRICH_DEBUG] pid=4456 inferredSrc=3180 type=131072 prot=32
+[MEM][PRIVATE_EXEC] SRC=3180 DST=4456 START=0000000003220000 BASE=0000000003220000 SIZE=4096 TYPE=MEM_PRIVATE PROTECT=RX
+
+[ALERT] Remote Injection | src=sample.exe(3180) dst=explorer.exe(4456)
+        technique=SHELLCODE_REMOTE_THREAD confidence=HIGH score=90
+```
+
+The alert fired consistently across 5 detonations in the same session, each injecting into a different `explorer.exe` desktop instance. The shellcode stub was always a 4KB `MEM_PRIVATE + RX` region, though the exact address varied between runs.
+
+Source attribution is inferred via handle correlation: the EDR identifies the most recent process that acquired `CREATE_THREAD` access to the target within a 5-second window, not from a direct kernel-level thread creation event.
+
+ENRICH_DEBUG confirms the thread created in Explorer (pid=4456) was attributed to sample.exe (inferredSrc=3180) via recent handle correlation, with type=131072 (`MEM_PRIVATE`) confirming the private memory region.
+
+### Scoring breakdown
+
+| Signal | Score | Notes |
+|--------|-------|-------|
+| Cross-process handle with dangerous access mask | +20 | First handle: `0x143A` (VM_WRITE\|VM_OPERATION\|CREATE_THREAD) |
+| Second handle open to same target | +20 | Second handle: `0x1402` (CREATE_THREAD only) - dedup issue, counted separately |
+| Remote thread in `MEM_PRIVATE + RX` memory | +50 | 4KB shellcode stub |
+| **Total** | **90** | Above alert threshold of 80 |
+
+### Timing race condition - hook DLL vs malware
+
+On some runs the hook DLL injection into the malware process failed (`[INJECT FAIL]`) - the dropper executed and injected into Explorer before the hook DLL could initialize. No WRITE event was captured and no alert fired. On successful runs the handle→thread sequence was captured, triggering the alert at score=90.
+
+This is a known architectural limitation - see [Limitations](#limitations--known-issues).
+
+### Possible direct syscall bypass - no write telemetry
+
+Despite Triage sandbox confirming WriteProcessMemory into Explorer, no WRITE event was ever captured by the EDR across repeated runs. The exact bypass mechanism was not confirmed during analysis - possible explanations include direct syscalls, indirect syscalls, or use of an alternative API such as NtMapViewOfSection that bypasses the hook entirely. This is consistent with the sample's broader evasion profile.
+
+### Deduplication gap
+
+With proper handle event deduplication (one score bump per src→dst pair per window), the score would be 70 - below the alert threshold - since:
+
+- Handle open (dedupped) → +20
+- Remote thread in MEM_PRIVATE → +50
+
+The alert currently fires only because duplicate handle events inflate the score to 90.
+
+Note that this scoring gap exists specifically because write telemetry is absent - either due to evasion or hook timing. If the VirtualProtectEx hook were stable and re-enabled, a protect flip to executable would contribute +25, pushing the dedupped score to 95. Similarly, if NtMapViewOfSection were hooked, section-mapping as an alternative write primitive would also be visible (if used). Both are on the future work list but ultimately symptoms of the same root limitation: without ETW-TI, all write/protect visibility depends on userland hooks that can be bypassed or lost to timing races. ETW-TI would provide kernel-level write telemetry immune to both bypass vectors, making the dedup gap a non-issue.
+
+---
+
 ## Components
 
 | Component | Language | Key Files | Description |
