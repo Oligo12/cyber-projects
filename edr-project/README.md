@@ -175,7 +175,8 @@ The base address `0x400000` is the default ImageBase for 32-bit .NET executables
 - **Single-host** - no central logging, no network telemetry
 - **WerFault noise** - crashed hollowed processes trigger WerFault handle opens that appear in telemetry
 - **Handle event deduplication** - `ObRegisterCallbacks` fires multiple times per logical action (process creation, DLL load, etc.); the scoring engine currently counts each one, which inflates scores for parent-child pairs. A production version would deduplicate by (src, dst) within a short window.
-
+- **VirtualProtect hooks disabled** - hooks for `NtProtectVirtualMemory` / `VirtualProtectEx` are currently commented out due to instability. Inline hooking caused crashes in multiple injected processes (likely due to incomplete RIP-relative relocation handling). These require further fixes before being re-enabled.
+ 
 ---
 
 ## What I Learned Building This
