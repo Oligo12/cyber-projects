@@ -2,7 +2,16 @@
 
 A custom Windows endpoint detection prototype (the "D" of EDR), built from scratch in C/C++, focused on detecting in-memory process injection across user-mode and kernel telemetry sources. Response automation is out of scope for v1 — see `KNOWN_LIMITATIONS.md`.
 
-**Status:** v1 complete. Validated against real malware samples that bypass Microsoft Defender at time of testing.
+**Version status:** v1 complete. Validated against real malware samples that bypass Microsoft Defender at time of testing.
+
+---
+
+**Author:** Nikola Marković  
+**Project status:** ongoing                                                                                                                              
+**Last updated:** 2026-05-04          
+**Repo:** https://github.com/Oligo12/cyber-projects/                                                                   
+**Email:** nikola.z.markovic@pm.me                                                                                                 
+**LinkedIn:** https://www.linkedin.com/in/nikolazmarkovic/  
 
 ---
 
