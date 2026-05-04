@@ -109,7 +109,7 @@ This is a defensive monitoring tool. The hooking techniques used for telemetry a
 
 ### Development context
 
-Developed solo over approximately three months as a learning exercise and portfolio piece, with AI-assisted iteration (Claude). Architectural decisions, malware sample selection, validation methodology, and design tradeoffs (e.g., the layered trust subsystem, the scope decision to add catalog signature support, the choice to hook at the Nt-layer rather than Win32) were driven by me; implementation was iterative collaboration. Each detection layer was empirically validated against real malware samples before moving to the next.
+Developed solo over approximately two months as a learning exercise and portfolio piece, with AI-assisted iteration (Claude). Architectural decisions, malware sample selection, validation methodology, and design tradeoffs (e.g., the layered trust subsystem, the scope decision to add catalog signature support, the choice to hook at the Nt-layer rather than Win32) were driven by me; implementation was iterative collaboration. Each detection layer was empirically validated against real malware samples before moving to the next.
 
 This project is the v1 of an ongoing effort to build hands-on understanding of Windows internals, EDR mechanics, and malware behavior.
 
