@@ -151,7 +151,7 @@ This is intentional scope, not oversight. Response involves a different threat m
 
 ## Development context
 
-This project was built solo over approximately three months as a learning exercise and portfolio piece, with AI-assisted iteration (see README). Architectural decisions, malware sample selection, and validation methodology were driven by the author; implementation was iterative collaboration. Each detection layer was empirically validated against real malware samples before moving to the next.
+This project was built solo over approximately two months as a learning exercise and portfolio piece, with AI-assisted iteration (see README). Architectural decisions, malware sample selection, and validation methodology were driven by the author; implementation was iterative collaboration. Each detection layer was empirically validated against real malware samples before moving to the next.
 
 Some of the limitations above reflect deliberate scoping choices (e.g., not implementing ETW-TI because the signing requirement is structural, not technical). Others reflect things that simply didn't fit in the v1 timeline (e.g., minifilter, WFP). The `v2` framing is not a roadmap commitment — it's an honest accounting of what would close each specific gap.
 
