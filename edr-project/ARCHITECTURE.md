@@ -309,8 +309,6 @@ A few decisions worth justifying explicitly:
 
 **One ring buffer, both telemetry sources.** Kernel events and hook DLL events flow into the same `g_EventQueue`, in the same `EDR_EVENT` shape. The detection code doesn't distinguish source. This keeps the chain-correlation logic uniform and means new telemetry sources (eventually: minifilter, WFP) plug in cleanly.
 
-**Rules-based scoring rather than ML.** Every score weight is human-set, every detection has a clear "this fired because primitives X+Y+Z were observed." Auditable, debuggable, no need for a training set. This isn't a knock on ML detections — it's the right call for *this* project, where the goal is to demonstrate understanding of attack mechanics, not to compete with CrowdStrike on coverage breadth.
-
 **4-tuple chain key (not just src+dst PID).** Windows recycles PIDs aggressively. Without the create-time pair in the key, a stale chain from a long-dead PID would corrupt scoring on a fresh process inheriting the PID. This is a real bug class — production EDRs handle it the same way.
 
 **Trust gate as a layered fail-closed pipeline rather than a single check.** Path → directory → LOLBin → signature, in that order, with the cheapest checks first. Every layer fails closed (default to not-trusted). LOLBin denylist is critical — it's why `powershell.exe snake.ps1` doesn't get bypassed despite PowerShell being a signed Microsoft binary in System32.
