@@ -58,6 +58,7 @@ Reaches alert threshold via the handle + write + thread path (60 → 80 with the
 **Why "tiny region" matters.** Legitimate code allocations are usually larger than a single page. Shellcode plants are commonly 200-800 bytes. A private executable region under 4KB is a strong shellcode signal even before correlating with anything else.
 
 **Validated against:** Unidentified injection sample (unknownsample.exe) that bypasses Microsoft Defender at time of testing. Each detonation produces one alert at score 80, technique=SHELLCODE_REMOTE_THREAD.
+
 ---
 
 ## T1055 — Image-Based Injection
