@@ -1,6 +1,6 @@
 # Known Limitations
 
-This document lists known gaps in the v1 build, with honest framing on why they exist and what would close them. The goal is transparency about what this prototype does and does not do — a v1 EDR is not a v5 EDR, and pretending otherwise would undermine the rest of the project.
+This document lists known gaps in the v1 build, with honest framing on why they exist and what would close them. The goal is transparency about what this prototype does and does not do — a v1 EDR is not a v5 EDR.
 
 Items are roughly ordered by impact on detection coverage.
 
