@@ -1,12 +1,11 @@
 # Cybersecurity Projects
 
 **Current Focus (Q2 2026):**
-- Security-relevant Windows internals deep dive
-- Expanding into Linux and basic cloud security concepts
+- Deepening Windows internals and Active Directory fundamentals through hands-on labs (HTB CPTS path)
   
 **Author:** Nikola Marković  
 **Status:** ongoing                                                                                                                              
-**Last updated:** 2026-05-04          
+**Last updated:** 2026-05-09          
 **Repo:** https://github.com/Oligo12/cyber-projects/                                                                   
 **Email:** nikola.z.markovic@pm.me                                                                                                 
 **LinkedIn:** https://www.linkedin.com/in/nikolazmarkovic/  
