@@ -1,7 +1,7 @@
 # Cybersecurity Projects
 
 **Current Focus (Q2 2026):**
-- Deepening Windows internals and Active Directory fundamentals through hands-on labs (HTB CPTS path)
+- Deepening Windows internals and Active Directory fundamentals through hands-on labs
   
 **Author:** Nikola Marković  
 **Status:** ongoing                                                                                                                              
