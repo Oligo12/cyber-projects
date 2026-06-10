@@ -828,10 +828,10 @@ void DetectionThreadEvent(
         s->score += 50;
     else if (isSuspiciousResume)
         s->score += 50;
-    else if (isImageExec)
+    else if (isImageExec && startMatchesWrite)
         s->score += 30;
 
-    if (startMatchesWrite)
+    if (startMatchesWrite && !isImageExec)
         s->score += 40;
 
     // Tiny-region bonus: a single-page (<=4KB) MEM_PRIVATE+RX region with a
