@@ -29,10 +29,10 @@ A third log line, `[TRUST_BYPASS]`, records when a chain that *would* have alert
 - Handle to suspended child with dangerous access mask → `+20`
 - Parent-to-child handle context bonus (parent → recently-created child) → `+10`
 - Write into child's memory → `+30`
-- Parent-to-child write bonus (the hollowing-specific signature) → `+50`
+- Parent-to-child write bonus (the hollowing-specific signature) → `+40`
 - `NtResumeThread` on the suspended target → `+50`
 
-A clean hollowing chain reaches score 160. Threshold for `[ALERT]` is 80, so the alert fires reliably even with one or two missed primitives.
+A clean hollowing chain reaches score 150. Threshold for `[ALERT]` is 80, so the alert fires reliably even with one or two missed primitives.
 
 **Why this works.** The parent-child relationship matters. A normal `CreateProcess(CREATE_SUSPENDED)` followed by `ResumeThread` is part of the legitimate Windows process-launch path; what makes it hollowing is that the parent *writes into the child between create and resume.* That write is what flips the chain from "normal launch" to "PROCESS_HOLLOWING."
 
@@ -48,7 +48,7 @@ A clean hollowing chain reaches score 160. Threshold for `[ALERT]` is 80, so the
 
 - Handle to non-child target with dangerous access mask → `+20`
 - Write into target's memory → `+30`
-- Protect to a private executable region (RW→RX, R→RX) → `+20`
+- Protect to a private executable region (RW→RX, R→RX) → `+25` (`+40` if a write was already observed on the same chain)
 - Tiny private-exec region bonus (≤ 0x1000) → `+10`
 - Thread create where the start address falls in private-exec memory → `+50`
 - (Bonus, not always present) `startMatchesWrite` — the thread's start address matches a region recently written to → adds confidence
@@ -69,11 +69,11 @@ Reaches alert threshold via the handle + write + thread path (60 → 80 with the
 
 - Handle to target with dangerous access mask → `+20`
 - Write into target's memory → `+30`
-- Thread create where start address falls in an image-backed region → `+50`
+- Thread create where start address falls in an image-backed region → `+30`
 
 The `IMAGE_BASED_INJECTION` technique label is selected when the thread starts in image-mapped memory, distinguishing it from shellcode in private memory.
 
-**Why split this out.** Image-based injection looks innocuous on the surface — image-backed memory is where legitimate DLLs live too. The detection has to correlate "the source process *just wrote* into this image-backed region" with "now there's a new thread starting inside it." That correlation is what makes it suspicious; either signal alone is unremarkable.
+**Why split this out.** Image-based injection looks innocuous on the surface — image-backed memory is where legitimate DLLs live too. The handle + write + image-thread chain (score 80) is sufficient to alert on its own. An additional `startMatchesWrite` bonus (`+40`) fires if the thread's start address falls within the range of the most recently written region — but this is a confidence boost, not a gate. The classification to `IMAGE_BASED_INJECTION` vs `SHELLCODE_REMOTE_THREAD` is purely based on whether the thread starts in `MEM_IMAGE` or `MEM_PRIVATE` memory.
 
 ---
 
