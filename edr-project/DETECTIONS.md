@@ -69,11 +69,11 @@ Reaches alert threshold via the handle + write + thread path (60 → 80 with the
 
 - Handle to target with dangerous access mask → `+20`
 - Write into target's memory → `+30`
-- Thread create where start address falls in an image-backed region → `+30`
+- Thread create where start address falls in an image-backed region **and** within the previously written region → +30
 
 The `IMAGE_BASED_INJECTION` technique label is selected when the thread starts in image-mapped memory, distinguishing it from shellcode in private memory.
 
-**Why split this out.** Image-based injection looks innocuous on the surface — image-backed memory is where legitimate DLLs live too. The handle + write + image-thread chain (score 80) is sufficient to alert on its own. An additional `startMatchesWrite` bonus (`+40`) fires if the thread's start address falls within the range of the most recently written region — but this is a confidence boost, not a gate. The classification to `IMAGE_BASED_INJECTION` vs `SHELLCODE_REMOTE_THREAD` is purely based on whether the thread starts in `MEM_IMAGE` or `MEM_PRIVATE` memory.
+**Why split this out.** Image-based injection looks innocuous on the surface — image-backed memory is where legitimate DLLs live too. Unlike shellcode injection where MEM_PRIVATE+RX is already suspicious on its own, an image-backed thread is completely normal unless it lands near a region the source process explicitly wrote into. The `startMatchesWrite` check is therefore a hard gate for this technique — the thread event only scores if the start address falls within the range of the most recently written region. Legitimate DLL loading via LoadLibrary never triggers this because no external WriteProcessMemory precedes it.
 
 ---
 
