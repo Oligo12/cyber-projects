@@ -305,11 +305,11 @@ This retry pattern matters because chain detection sometimes references the reso
 
 A few decisions worth justifying explicitly:
 
-**Userland orchestration, kernel as a sensor.** The driver's job is to surface events fast and accurately. It does no detection logic. The detection logic lives in user-mode, where iteration is fast (no BSOD from a bad detection rule), where the language is C++ (with `std::map`, `std::wstring`), and where recovery from a bug is "EDRClient.exe restart" rather than "reboot." Many production EDR designs follow a similar split: minimal kernel surface, richer userland orchestration.
+**Userland orchestration, kernel as a sensor.** The driver's job is to surface events fast and accurately. It does no detection logic. The detection logic lives in user-mode, where iteration is fast (no BSOD from a bad detection rule), where the language is C++ (with `std::map`, `std::wstring`), and where recovery from a bug is "EDRClient.exe restart" rather than "reboot." 
 
 **One ring buffer, both telemetry sources.** Kernel events and hook DLL events flow into the same `g_EventQueue`, in the same `EDR_EVENT` shape. The detection code doesn't distinguish source. This keeps the chain-correlation logic uniform and means new telemetry sources (eventually: minifilter, WFP) plug in cleanly.
 
-**4-tuple chain key (not just src+dst PID).** Windows recycles PIDs aggressively. Without the create-time pair in the key, a stale chain from a long-dead PID would corrupt scoring on a fresh process inheriting the PID. This is a real bug class - production EDRs handle it the same way.
+**4-tuple chain key (not just src+dst PID).** Windows recycles PIDs aggressively. Without the create-time pair in the key, a stale chain from a long-dead PID would corrupt scoring on a fresh process inheriting the PID. 
 
 **Trust gate as a layered fail-closed pipeline rather than a single check.** Path → directory → LOLBin → signature, in that order, with the cheapest checks first. Every layer fails closed (default to not-trusted). LOLBin denylist is critical - it's why `powershell.exe snake.ps1` doesn't get bypassed despite PowerShell being a signed Microsoft binary in System32.
 
@@ -319,8 +319,8 @@ A few decisions worth justifying explicitly:
 
 These are scoped *out* of v1 deliberately, not omitted by oversight:
 
-- **Filesystem minifilter** - would catch ransomware-style mass-encrypt patterns and persistence drops to autoruns locations. Significant scope; v2.
-- **WFP network callouts** - would catch C2 beaconing, exfil, lateral movement. Significant scope; v2.
+- **Filesystem minifilter** - would catch ransomware-style mass-encrypt patterns and persistence drops to autoruns locations.
+- **WFP network callouts** - would catch C2 beaconing, exfil, lateral movement. 
 - **ETW Threat-Intelligence** - replaces user-mode hooks with kernel-sourced bitness-independent events. Blocked on PPL-AntiMalware code-signing (vendor-only); structural, not technical.
 - **Publisher-name pinning on Authenticode** - currently any valid signer is trusted. Tightening to "Microsoft Windows" / "Microsoft Corporation" is a v2 hardening.
 - **Anomaly detection on trusted processes** - currently trust = absolute suppress. Layering "explorer.exe is trusted but writing to a private-RX region is still weird" needs a second pass.
