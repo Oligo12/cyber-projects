@@ -1,6 +1,6 @@
-# EDR Project — Process Injection Detection (v1)
+# EDR Project - Process Injection Detection (v1)
 
-A custom Windows endpoint detection prototype (the "D" of EDR), built from scratch in C/C++, focused on detecting in-memory process injection across user-mode and kernel telemetry sources. Response automation is out of scope for v1 — see `KNOWN_LIMITATIONS.md`.
+A custom Windows endpoint detection prototype (the "D" of EDR), built from scratch in C/C++, focused on detecting in-memory process injection across user-mode and kernel telemetry sources. Response automation is out of scope for v1 - see `KNOWN_LIMITATIONS.md`.
 
 **Version status:** v1 complete. Validated against real malware samples that bypass Microsoft Defender at time of testing.
 
@@ -22,7 +22,7 @@ A custom Windows endpoint detection prototype (the "D" of EDR), built from scrat
 | Unidentified Explorer.exe injector (Defender-evasive)    | Detected as `SHELLCODE_REMOTE_THREAD` on every successful detonation |
 | SnakeKeylogger PowerShell variant (17 injection chains across 3 detonations) | Every chain detected as `PROCESS_HOLLOWING`, despite source being signed-Microsoft PowerShell in System32 |
 | MusNotification.exe + taskhostw.exe (legitimate Windows behavior with injection-like primitives) | 10 chains suppressed via trust subsystem; zero false-positive alerts |
-| AgentTesla (32-bit malware)                                       | Limitation: kernel callbacks observe it, but the user-mode hook DLL is x64-only — chain doesn't accumulate enough score. Documented in `KNOWN_LIMITATIONS.md`. |
+| AgentTesla (32-bit malware)                                       | Limitation: kernel callbacks observe it, but the user-mode hook DLL is x64-only - chain doesn't accumulate enough score. Documented in `KNOWN_LIMITATIONS.md`. |
 
 See the `evidence/` folder for excerpts of the actual log lines.
 
@@ -30,7 +30,7 @@ See the `evidence/` folder for excerpts of the actual log lines.
 
 ## Architecture, in one paragraph
 
-A test-signed kernel driver registers four standard Windows callbacks (process / thread / image / handle) and emits structured events into a 16384-slot ring buffer. A user-mode client drains the ring buffer over an IRP-based device interface, tracks injection chains keyed on `(source PID, destination PID, source createTime, destination createTime)` to defeat PID recycling, and runs rules-based scoring against observed primitives. A user-mode hook DLL is injected into every running process to capture three Nt-layer syscalls (`NtWriteVirtualMemory`, `NtProtectVirtualMemory`, `NtResumeThread`) — the events kernel callbacks alone can't see. A layered trust subsystem (path → trusted-directory → LOLBin denylist → Authenticode signature with embedded + catalog support) suppresses alerts on legitimate signed-Microsoft system processes without weakening detection of malware that abuses LOLBins like PowerShell.
+A test-signed kernel driver registers four standard Windows callbacks (process / thread / image / handle) and emits structured events into a 16384-slot ring buffer. A user-mode client drains the ring buffer over an IRP-based device interface, tracks injection chains keyed on `(source PID, destination PID, source createTime, destination createTime)` to defeat PID recycling, and runs rules-based scoring against observed primitives. A user-mode hook DLL is injected into every running process to capture three Nt-layer syscalls (`NtWriteVirtualMemory`, `NtProtectVirtualMemory`, `NtResumeThread`) - the events kernel callbacks alone can't see. A layered trust subsystem (path → trusted-directory → LOLBin denylist → Authenticode signature with embedded + catalog support) suppresses alerts on legitimate signed-Microsoft system processes without weakening detection of malware that abuses LOLBins like PowerShell.
 
 For the full technical writeup, see [`ARCHITECTURE.md`](ARCHITECTURE.md).
 
@@ -42,7 +42,7 @@ For the full technical writeup, see [`ARCHITECTURE.md`](ARCHITECTURE.md).
 |------------------------------------|-------------|----------------------------|
 | Process Hollowing                  | T1055.012   | SnakeKeylogger             |
 | Shellcode Remote Thread            | T1055       | Defender-evasive injector  |
-| Image-Based Injection              | T1055       | —                          |
+| Image-Based Injection              | T1055       | -                          |
 
 For full detection writeups including the chain logic and validating samples, see [`DETECTIONS.md`](DETECTIONS.md).
 
@@ -83,12 +83,12 @@ edr-project/
 ### Requirements
 - Visual Studio 2022 + Windows Driver Kit (WDK)
 - Test VM with test-signing enabled (`bcdedit /set testsigning on`)
-- [Zydis](https://github.com/zyantific/zydis) disassembler — used by the hook DLL for instruction-length decoding when calculating patch length
+- [Zydis](https://github.com/zyantific/zydis) disassembler - used by the hook DLL for instruction-length decoding when calculating patch length
 
 ### Expected install layout
 The userland client and hook DLL look for a fixed path:
-- `C:\drivers\EDRHookClean.dll` — hook DLL injected into target processes
-- `C:\drivers\edr_log.txt` — runtime log output
+- `C:\drivers\EDRHookClean.dll` - hook DLL injected into target processes
+- `C:\drivers\edr_log.txt` - runtime log output
 
 These paths are currently hardcoded in source (see refactoring backlog in `KNOWN_LIMITATIONS.md`). Change at build time if needed.
 
@@ -99,7 +99,7 @@ These paths are currently hardcoded in source (see refactoring backlog in `KNOWN
 4. Run `EDRClient.exe` as Administrator
 
 ### Note on the skip list
-`main.cpp` and `output.cpp` both skip-list `OSRLOADER.exe` and `Dbgview.exe` — these are kernel-debug tools used during development and have no effect outside that environment. They'll be removed when the skip list is refactored (see backlog).
+`main.cpp` and `output.cpp` both skip-list `OSRLOADER.exe` and `Dbgview.exe` - these are kernel-debug tools used during development and have no effect outside that environment. They'll be removed when the skip list is refactored (see backlog).
 
 ---
 
