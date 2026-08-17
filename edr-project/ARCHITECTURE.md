@@ -1,8 +1,8 @@
 # Architecture
 
-This document explains how the EDR works, the design decisions behind it, and the rationale for major scope choices. It's written for a technical reader - someone reading the source code who wants the mental model first.
+This document explains how the EDR works, the design decisions behind it, and the rationale for major scope choices.
 
-For what it detects (and what it doesn't), see [`DETECTIONS.md`](DETECTIONS.md). For honest scope boundaries, see [`KNOWN_LIMITATIONS.md`](KNOWN_LIMITATIONS.md).
+For what it detects (and what it doesn't), see [`DETECTIONS.md`](DETECTIONS.md). For scope boundaries, see [`KNOWN_LIMITATIONS.md`](KNOWN_LIMITATIONS.md).
 
 ---
 
