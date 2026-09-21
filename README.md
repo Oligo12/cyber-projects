@@ -17,6 +17,6 @@ Current labs and projects:
 - [**vulnerability-management-openvas-lab/**](/vulnerability-management-openvas-lab) - mini lab demonstrating vulnerability scanning, triage, validation, prioritization, and remediation using OpenVAS (Greenbone). Focused on analyst judgment and communication rather than exploit proof.
 - [**phishing-analysis/**](phishing-analysis) - triage of real phishing emails: header and `Received` chain analysis, SPF/DKIM/DMARC verdicts, URL and infrastructure assessment, IOC extraction, and written verdicts with recommended actions. Extracted IOCs feed [**detection-lab/**](detection-lab).
 
-Current samples analyzed: SnakeKeylogger, Agent Tesla, Pulsar/Quasar RAT, WannaCry.
+Samples written up: SnakeKeylogger, Agent Tesla, Pulsar/Quasar RAT, WannaCry.
 
 License: **The Unlicense** (public domain).
