@@ -41,5 +41,5 @@ Velociraptor Artifact used: Windows.Remediation.Process.
 
 ## Notes / tuning
 - Expect FP when installer spawns PowerShell.
-- Next: add memdump step after kill.
+
 
