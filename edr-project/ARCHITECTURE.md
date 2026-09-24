@@ -156,7 +156,7 @@ Stale chains are cleaned up via two mechanisms: timeout decay inside per-event h
 ## 4. Scoring model
 
 This is rules-based, intentionally - every score change is auditable. No ML (machine learning), no opaque thresholds, every weight is set by hand and justified by the malware behavior it's meant to catch.   
-Weights and thresholds will be retuned as additional telemetry sources are added - adding minifilter (filesystem) or WFP (network) telemetry would change the optimal scoring model.
+Weights and thresholds would need retuning if additional telemetry sources were added - minifilter (filesystem) or WFP (network) telemetry would change the optimal scoring model.
 
 The current model uses these primitives and bonuses (read `usermode/client/detections.cpp` for ground truth):
 
@@ -261,7 +261,7 @@ Net: in a session with many MusNotification chains, `WinVerifyTrust` runs exactl
 
 ### What the trust gate does NOT protect against
 
-If a real attacker hijacks `explorer.exe` itself - DLL hijacking, classic reflective injection into a trusted process - and uses it to inject elsewhere, the trust gate suppresses the alert. This is a known weakness of *every* signature-based trust pattern, including production EDRs. It's listed in `KNOWN_LIMITATIONS.md` and the v2 path is anomaly detection on trusted processes (e.g., "signed-Microsoft-explorer is writing to a tiny private-RX region - that's unusual *even though* explorer is trusted").
+If a real attacker hijacks `explorer.exe` itself - DLL hijacking, classic reflective injection into a trusted process - and uses it to inject elsewhere, the trust gate suppresses the alert. This is a known weakness of *every* signature-based trust pattern, including production EDRs. It's listed in `KNOWN_LIMITATIONS.md` and the fix would be anomaly detection on trusted processes (e.g., "signed-Microsoft-explorer is writing to a tiny private-RX region - that's unusual *even though* explorer is trusted").
 
 ---
 
@@ -322,7 +322,7 @@ These are scoped *out* of v1 deliberately, not omitted by oversight:
 - **Filesystem minifilter** - would catch ransomware-style mass-encrypt patterns and persistence drops to autoruns locations.
 - **WFP network callouts** - would catch C2 beaconing, exfil, lateral movement. 
 - **ETW Threat-Intelligence** - replaces user-mode hooks with kernel-sourced bitness-independent events. Blocked on PPL-AntiMalware code-signing (vendor-only); structural, not technical.
-- **Publisher-name pinning on Authenticode** - currently any valid signer is trusted. Tightening to "Microsoft Windows" / "Microsoft Corporation" is a v2 hardening.
+- **Publisher-name pinning on Authenticode** - currently any valid signer is trusted. Tightening to "Microsoft Windows" / "Microsoft Corporation" would be the hardening step.
 - **Anomaly detection on trusted processes** - currently trust = absolute suppress. Layering "explorer.exe is trusted but writing to a private-RX region is still weird" needs a second pass.
 - **32-bit hook DLL** - current build is x64-only. 32-bit malware (AgentTesla and similar) gets reduced visibility. Build a 32-bit DLL alongside the x64 one.
 
