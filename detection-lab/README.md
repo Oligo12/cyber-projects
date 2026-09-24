@@ -1,6 +1,6 @@
 # Detection Lab (Sentinel <-> Velociraptor)
 **Author:** Nikola Marković  
-**Status:** MVP (ongoing)  
+**Status:** MVP
 **Last updated:** 2025-12-28              
 **Repo:** https://github.com/Oligo12/cyber-projects/                                                                   
 **Email:** nikola.z.markovic@pm.me                                                                                                 
