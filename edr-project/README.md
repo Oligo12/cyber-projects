@@ -2,7 +2,7 @@
 
 A custom Windows endpoint detection prototype (the "D" of EDR), built from scratch in C/C++, focused on detecting in-memory process injection across user-mode and kernel telemetry sources. Response automation is out of scope for v1 - see `KNOWN_LIMITATIONS.md`.
 
-**Version status:** v1 complete. Validated against real malware samples that bypass Microsoft Defender at time of testing.
+**Version status:** v1 complete; not under active development. Validated against real malware samples that bypass Microsoft Defender at time of testing.
 
 ---
 
@@ -99,7 +99,7 @@ These paths are currently hardcoded in source (see refactoring backlog in `KNOWN
 4. Run `EDRClient.exe` as Administrator
 
 ### Note on the skip list
-`main.cpp` and `output.cpp` both skip-list `OSRLOADER.exe` and `Dbgview.exe` - these are kernel-debug tools used during development and have no effect outside that environment. They'll be removed when the skip list is refactored (see backlog).
+`main.cpp` and `output.cpp` both skip-list `OSRLOADER.exe` and `Dbgview.exe` - these are kernel-debug tools used during development and have no effect outside that environment. They would go away in a skip-list refactor (see backlog).
 
 ---
 
@@ -111,7 +111,7 @@ This is a defensive monitoring tool. The hooking techniques used for telemetry a
 
 Developed solo over approximately two months as a learning exercise and portfolio piece, with AI-assisted iteration (Claude). Architectural decisions, malware sample selection, validation methodology, and design tradeoffs (e.g., the layered trust subsystem, the scope decision to add catalog signature support, the choice to hook at the Nt-layer rather than Win32) were driven by me; implementation was iterative collaboration. Each detection layer was empirically validated against real malware samples before moving to the next.
 
-This project is the v1 of an ongoing effort to build hands-on understanding of Windows internals, EDR mechanics, and malware behavior.
+This project was built to develop hands-on understanding of Windows internals, EDR mechanics, and malware behavior.
 
 ---
 
