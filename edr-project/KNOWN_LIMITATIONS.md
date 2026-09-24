@@ -128,7 +128,7 @@ Out of scope for v1:
 
 ---
 
-## Telemetry surfaces not yet implemented
+## Telemetry surfaces not implemented
 
 The kernel driver currently provides process, thread, handle, and memory event telemetry. Two additional surfaces are scoped but not built:
 
@@ -171,7 +171,7 @@ These don't affect detection capability - they're code-quality items I'm aware o
 
 The skip list (kernel pseudo-processes, structurally-essential system processes, EDRClient itself, dev tools) is open-coded as an `_wcsicmp` cascade in both `main.cpp` (startup snapshot loop) and `output.cpp` (runtime `PROCESS_CREATE` handler). Should be a single `BOOL ShouldSkipInjection(const wchar_t* exeName)` helper in `edrclient.h`.
 
-**Why it matters:** the existing limitation about filename-substring matching being fragile (see above) should be fixed in *one* place when it gets fixed. Two implementations means two opportunities for drift.
+**Why it matters:** the existing limitation about filename-substring matching being fragile (see above) should be fixed in *one* place if it ever gets fixed. Two implementations means two opportunities for drift.
 
 ### Dev-environment entries leaking into the skip list
 
