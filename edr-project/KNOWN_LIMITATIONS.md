@@ -14,7 +14,7 @@ Kernel callbacks still observe these processes - handle opens, thread creates, p
 
 In practice: AgentTesla detonates cleanly under the current build with kernel-level telemetry visible, but no `[ALERT]` fires.
 
-**Closing the gap (v2):**
+**What would close it:**
 
 - Build a 32-bit hook DLL alongside the x64 one. Architecturally clean; doubles the DLL maintenance surface.
 - ETW Threat-Intelligence (ETW-TI) supplements user-mode hooks with kernel-sourced bitness-independent events. Out of reach for this project (requires PPL-AntiMalware code-signing, vendor-only) but worth noting as the production-grade alternative.
@@ -27,7 +27,7 @@ In practice: AgentTesla detonates cleanly under the current build with kernel-le
 
 Severity is moderate, not severe: kernel callbacks still see these processes regardless of name. Hook bypass costs the EDR write/protect visibility on that specific process, not all visibility.
 
-**Closing the gap (v2):** Reuse the path-normalization + trusted-directory + LOLBin pattern already in `IsTrustedSystemSource` (see `detections.cpp`). Refactor those helpers into a shared utility so the hook injection skip list and the trust subsystem use the same path-aware matching.
+**What would close it:** Reuse the path-normalization + trusted-directory + LOLBin pattern already in `IsTrustedSystemSource` (see `detections.cpp`). Refactor those helpers into a shared utility so the hook injection skip list and the trust subsystem use the same path-aware matching.
 
 ---
 
@@ -39,7 +39,7 @@ These FPs are *additional* to the genuine `powershell → Aspnet_compiler.exe` h
 
 Root cause not fully isolated in v1. The most likely candidate is an over-weighted "parent writes into fresh child" bonus that fires on PowerShell's child-initialization traffic - runspace setup and .NET host plumbing perform cross-process writes shortly after `CreateProcess`, which the chain logic currently scores the same as malicious writes.
 
-**Closing the gap (v2):** Reproduce outside a malware detonation - spawn a benign PowerShell child from a benign PowerShell parent and check whether the chain still alerts. If yes, retune the parent-child write bonus or add a young-child age suppressor so normal `CreateProcess` init traffic doesn't score.
+**What would close it:** Reproduce outside a malware detonation - spawn a benign PowerShell child from a benign PowerShell parent and check whether the chain still alerts. If yes, retune the parent-child write bonus or add a young-child age suppressor so normal `CreateProcess` init traffic doesn't score.
 
 ---
 
@@ -49,7 +49,7 @@ Root cause not fully isolated in v1. The most likely candidate is an over-weight
 
 In practice this means: a third-party signed binary placed in `C:\Windows\System32` (rare, but not impossible - vendor-installed system tools, driver helpers, antivirus components) would be trusted. The user-permission model already restricts who can write to `System32`, so the practical risk is low, but the trust gate could be tighter.
 
-**Closing the gap (v2):** Extract the cert chain from the `WinVerifyTrust` state and pin on subject (e.g., "Microsoft Windows", "Microsoft Corporation"). The plumbing exists - `WTGetSignatureSettings` / `CryptQueryObject` - it's just not wired up.
+**What would close it:** Extract the cert chain from the `WinVerifyTrust` state and pin on subject (e.g., "Microsoft Windows", "Microsoft Corporation"). The plumbing exists - `WTGetSignatureSettings` / `CryptQueryObject` - it's just not wired up.
 
 ---
 
@@ -59,7 +59,7 @@ By design, the trust gate suppresses alerts where the source process is a signed
 
 This is a known weakness of every signature-based trust pattern - including production EDRs. Trust-by-identity assumes process identity is the attacker's bottleneck, which it isn't always.
 
-**Closing the gap (v2):** Anomaly detection on trusted processes. Examples: explorer.exe writing to a private RX page in a small region is suspicious *even though* explorer is trusted; svchost.exe spawning `cmd.exe` is suspicious even though both are signed Microsoft binaries. The trust subsystem becomes a "default suppress" rather than an "absolute suppress."
+**What would close it:** Anomaly detection on trusted processes. Examples: explorer.exe writing to a private RX page in a small region is suspicious *even though* explorer is trusted; svchost.exe spawning `cmd.exe` is suspicious even though both are signed Microsoft binaries. The trust subsystem becomes a "default suppress" rather than an "absolute suppress."
 
 ---
 
@@ -69,7 +69,7 @@ Currently in `DetectionThreadEvent`, the first executing thread for a (src→dst
 
 Pattern: any sample that creates threads and writes in non-canonical order would lose the `startMatchesWrite` signal.
 
-**Closing the gap (v2):** Split the dedup. Keep `sawThread` for one-time primitive bumps (image_exec / private_exec scoring, which only count once per chain). Allow `startMatchesWrite` to fire on later threads as a separate gated bonus, with its own flag (`sawStartMatchesWrite`).
+**What would close it:** Split the dedup. Keep `sawThread` for one-time primitive bumps (image_exec / private_exec scoring, which only count once per chain). Allow `startMatchesWrite` to fire on later threads as a separate gated bonus, with its own flag (`sawStartMatchesWrite`).
 
 ---
 
@@ -83,7 +83,7 @@ Pattern: any sample that creates threads and writes in non-canonical order would
 
 In practice this manifests as `path_normalize_failed` (silent - the trust gate fails closed). Untrusted-by-default failure mode means the cost of a normalization miss is a *false alert*, never a missed detection.
 
-**Closing the gap (v2):** Resolve via `GetFinalPathNameByHandle` after opening the file. More robust, slightly slower; cache absorbs the cost.
+**What would close it:** Resolve via `GetFinalPathNameByHandle` after opening the file. More robust, slightly slower; cache absorbs the cost.
 
 ---
 
@@ -91,7 +91,7 @@ In practice this manifests as `path_normalize_failed` (silent - the trust gate f
 
 Resolving target process create-time happens on every thread event via a userland → kernel → userland round trip. Hasn't been a problem at typical event rates, but heavy thread-create load (e.g., a benchmark process spawning thousands of threads) would surface latency. No measurements yet.
 
-**Closing the gap (v2):** Cache create-time per (pid, dst) in the `INJECT_STATE` slot - already populated on first observation, just not reused. One-line fix; deferred only because it hasn't bitten.
+**What would close it:** Cache create-time per (pid, dst) in the `INJECT_STATE` slot - already populated on first observation, just not reused. One-line fix; left as-is because it hasn't bitten.
 
 ---
 
@@ -99,7 +99,7 @@ Resolving target process create-time happens on every thread event via a userlan
 
 The catalog signature dispatcher tries SHA-256 first, falls back to SHA-1. Both algos are tried silently; only the final TRUE/FALSE is observable. If a catalog is ever revoked, corrupted, or fails for an unexpected reason, there's no log trail to investigate after the fact.
 
-**Closing the gap (v2):** Add a debug-flag-gated success log. Off by default in production builds; on by default in dev builds.
+**What would close it:** Add a debug-flag-gated success log. Off by default in production builds; on by default in dev builds.
 
 ---
 
@@ -119,7 +119,7 @@ Current build detects three injection techniques with high confidence:
 - **Shellcode Remote Thread** (T1055)
 - **Image-Based Injection**
 
-Out of scope for v1, deferred to future iterations:
+Out of scope for v1:
 
 - **DLL Sideloading** (T1574.002) - file-system-side detection; needs minifilter
 - **APC Injection** (T1055.004) - needs an `NtQueueApcThread` user-mode hook (or ETW-TI's APC events)
@@ -135,7 +135,7 @@ The kernel driver currently provides process, thread, handle, and memory event t
 - **Filesystem minifilter** - for ransomware-style mass-rename / mass-encrypt detection, suspicious LOLBin file drops, persistence locations.
 - **Windows Filtering Platform (WFP) callouts** - for network-side detection: C2 beaconing, exfiltration, lateral movement attempts.
 
-Both are roadmap items, not bugs. Mentioned here so readers understand the scope of v1.
+Both are scope boundaries, not bugs. Mentioned here so readers understand the scope of v1.
 
 ---
 
@@ -145,7 +145,7 @@ This is the "D" of EDR - detection only. There is no response capability in v1: 
 
 This is intentional scope, not oversight. Response involves a different threat model: who can trigger a kill, what permissions the response runs under, how to avoid breaking the host on a false positive, how to handle race conditions where the malicious thread has already executed by the time the alert fires. None of that is technically prohibitive, but all of it deserves its own thinking pass rather than being bolted on.
 
-**Closing the gap (v2):** A response module sitting downstream of the alert pipeline. Initial scope: terminate the destination process on `[ALERT]`, with a kill-list whitelist (don't terminate `lsass.exe` even if it's the dst), confidence threshold (only HIGH confidence triggers automation), and an off-by-default flag so the EDR ships safe by default. Network isolation and file quarantine are bigger; v3+.
+**What would close it:** A response module sitting downstream of the alert pipeline. Initial scope: terminate the destination process on `[ALERT]`, with a kill-list whitelist (don't terminate `lsass.exe` even if it's the dst), confidence threshold (only HIGH confidence triggers automation), and an off-by-default flag so the EDR ships safe by default. Network isolation and file quarantine would be a larger effort still.
 
 ---
 
@@ -153,13 +153,13 @@ This is intentional scope, not oversight. Response involves a different threat m
 
 This project was built solo over approximately two months as a learning exercise and portfolio piece, with AI-assisted iteration (see README). Architectural decisions, malware sample selection, and validation methodology were driven by the author; implementation was iterative collaboration. Each detection layer was empirically validated against real malware samples before moving to the next.
 
-Some of the limitations above reflect deliberate scoping choices (e.g., not implementing ETW-TI because the signing requirement is structural, not technical). Others reflect things that didn't fit in the v1 timeline (e.g., minifilter, WFP). 
+Some of the limitations above reflect deliberate scoping choices (e.g., not implementing ETW-TI because the signing requirement is structural, not technical). Others reflect things that were out of scope for v1 (e.g., minifilter, WFP). 
 
 ---
 
 ## Code organization / refactoring backlog
 
-These don't affect detection capability - they're code-quality items I know about and intend to address. Documenting them here so the gap is visible rather than hidden.
+These don't affect detection capability - they're code-quality items I'm aware of.
 
 ### Hardcoded DLL path duplicated across files
 
@@ -175,7 +175,7 @@ The skip list (kernel pseudo-processes, structurally-essential system processes,
 
 ### Dev-environment entries leaking into the skip list
 
-`OSRLOADER.exe` and `Dbgview.exe` are tools used on the kernel-development host (OSR's driver loader and Sysinternals DBGView). They were added to suppress noise during development and never removed. They're harmless outside that environment but are visible in source. Will be cleaned up alongside the skip-list refactor.
+`OSRLOADER.exe` and `Dbgview.exe` are tools used on the kernel-development host (OSR's driver loader and Sysinternals DBGView). They were added to suppress noise during development and never removed. They're harmless outside that environment but are visible in source. A skip-list refactor would remove them.
 
 ### Driver init silent partial-failure
 
