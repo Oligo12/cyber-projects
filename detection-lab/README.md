@@ -18,7 +18,6 @@ Implemented Microsoft Sentinel playbook -> secure webhook -> Velociraptor API to
 
 ## Status
 - Core detections + kill-by-pid playbook wired
-- Next: memdump & collect playbooks/artifacts, enrich, write general KQL and sigma rules.
 
 ## What’s here
 - **[Detections:](detections)**  
