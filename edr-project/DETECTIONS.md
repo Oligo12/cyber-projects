@@ -1,6 +1,6 @@
 # Detections
 
-This document lists what the EDR detects, mapped to MITRE ATT&CK where applicable. For *how* it detects them, see [`ARCHITECTURE.md`](ARCHITECTURE.md). For what it doesn't catch yet, see [`KNOWN_LIMITATIONS.md`](KNOWN_LIMITATIONS.md).
+This document lists what the EDR detects, mapped to MITRE ATT&CK where applicable. For *how* it detects them, see [`ARCHITECTURE.md`](ARCHITECTURE.md). For what it doesn't catch, see [`KNOWN_LIMITATIONS.md`](KNOWN_LIMITATIONS.md).
 
 ---
 
@@ -94,10 +94,10 @@ The trust gate runs at 60 and 80 boundaries (cheaply, via per-chain cache). It d
 
 Listed for honesty:
 
-- **DLL Sideloading (T1574.002)** — out of v1 scope. Needs filesystem-side telemetry (minifilter) to detect the abuse pattern (legitimate signed binary loading attacker-controlled DLL from a writable directory). Roadmap.
+- **DLL Sideloading (T1574.002)** — out of v1 scope. Needs filesystem-side telemetry (minifilter) to detect the abuse pattern (legitimate signed binary loading attacker-controlled DLL from a writable directory). Not implemented.
 - **APC Injection (T1055.004)** — needs an `NtQueueApcThread` user-mode hook (or ETW-TI's APC events). Not implemented.
 - **AtomBombing / Process Doppelgänging** — exotic injection variants relying on transactional NTFS / atom tables. Not in scope; v2+ if ever.
 - **Manual mapping / reflective loading** with no module-mapping events — partial coverage today via private-RX scoring, but not validated against representative samples.
 - **32-bit malware** — see `KNOWN_LIMITATIONS.md`. Kernel callbacks see them; user-mode write/protect telemetry doesn't (DLL is x64-only). AgentTesla detonates cleanly with kernel events visible, but typical hollowing chains don't accumulate enough score to alert.
 
-See `KNOWN_LIMITATIONS.md` for the full inventory and v2 paths.
+See `KNOWN_LIMITATIONS.md` for the full inventory and what would close each gap.
