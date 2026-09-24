@@ -7,7 +7,7 @@ A custom Windows endpoint detection prototype (the "D" of EDR), built from scrat
 ---
 
 **Author:** Nikola Marković  
-**Project status:** ongoing                                                                                                                              
+**Project status:** v1 complete                                                                                                                           
 **Last updated:** 2026-05-04          
 **Repo:** https://github.com/Oligo12/cyber-projects/                                                                   
 **Email:** nikola.z.markovic@pm.me                                                                                                 
