@@ -55,7 +55,7 @@ edr-project/
 ├── README.md                ← you are here
 ├── ARCHITECTURE.md          ← full technical writeup
 ├── DETECTIONS.md            ← what gets detected and how
-├── KNOWN_LIMITATIONS.md     ← scope boundaries + v2 backlog
+├── KNOWN_LIMITATIONS.md     ← scope boundaries + known gaps
 ├── evidence/                ← log excerpts demonstrating real detections
 │   ├── explorer-injector-alert.md
 │   ├── snake-alerts.md
