@@ -9,7 +9,7 @@
 [Back to Main README](../README.md)
 
 ## Summary
-Implemented Microsoft Sentinel playbook -> secure webhook -> Velociraptor API to terminate a target PID on alert. Demonstrates remote response workflows in a lab environment. Memory capture and file collection are planned.
+Implemented Microsoft Sentinel playbook -> secure webhook -> Velociraptor API to terminate a target PID on alert. Demonstrates remote response workflows in a lab environment. 
 
 ## Notes
 - Lab-only learning and prototype content. Velociraptor is used to simulate remote response actions via Logic App automation.
