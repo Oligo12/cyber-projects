@@ -24,8 +24,7 @@ Microsoft Sentinel lab covering two areas:
   - **[ad-identity/](detections/ad-identity):** 6 AD attack detections (AD-DET-001 to 006).
   - **[malware/](detections/malware):** 7 behavior detections from malware analysis.
 - **[log-samples/](log-samples):** query output from the lab for each AD detection.
-- **[playbooks/](playbooks):** response playbooks.
-- **[evidence/](evidence):** evidence of the playbooks working.
+- **[playbooks/](playbooks):** kill-by-pid response playbook and evidence of it working.
 - **images/:** images used in this section of the repo.
 
 ## Status
