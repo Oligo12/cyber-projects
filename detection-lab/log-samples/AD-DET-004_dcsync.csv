@@ -1,0 +1,2 @@
+﻿SubjectUserName,SubjectDomainName,SubjectLogonId,Computer,"TimeGenerated [UTC]",EventCount,"FirstSeen [UTC]","LastSeen [UTC]",RightsObserved,SourceIp,SourceLogonType
+"svc-sql",LAB,0x3b48817,"WIN-72DM6NS4BVH.lab.local","9/26/2026, 3:16:00.000 PM",24,"9/26/2026, 3:16:49.276 PM","9/26/2026, 3:16:49.332 PM","[""DS-Replication-Get-Changes"",""DS-Replication-Get-Changes-All (credential access)""]","10.10.10.50",3

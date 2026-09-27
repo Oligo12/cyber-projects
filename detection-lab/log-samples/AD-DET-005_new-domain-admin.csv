@@ -1,0 +1,6 @@
+﻿"TimeGenerated [UTC]",EventID,Computer,Scope,SubjectUserName,TargetUserName,TargetSid,AddedMember,MemberName,SubjectLogonId,SuspicionFlag
+"9/27/2026, 4:04:16.029 PM",4732,"WIN-72DM6NS4BVH.lab.local",Domain,Administrator,DnsAdmins,"S-1-5-21-425975000-51075076-1307731156-1101",testpriv,"CN=testpriv,CN=Users,DC=lab,DC=local",0x6e79c,"Human subject - verify with admin"
+"9/27/2026, 4:04:15.210 PM",4756,"WIN-72DM6NS4BVH.lab.local",Domain,Administrator,"Enterprise Admins","S-1-5-21-425975000-51075076-1307731156-519",testpriv,"CN=testpriv,CN=Users,DC=lab,DC=local",0x6e79c,"Human subject - verify with admin"
+"9/26/2026, 4:24:11.175 PM",4728,"WIN-72DM6NS4BVH.lab.local",Domain,Administrator,"Domain Admins","S-1-5-21-425975000-51075076-1307731156-512",hacker,"CN=hacker,CN=Users,DC=lab,DC=local",0x6ca41,"Human subject - verify with admin"
+"9/26/2026, 4:22:52.198 PM",4728,"WIN-72DM6NS4BVH.lab.local",Domain,Administrator,"Domain Admins","S-1-5-21-425975000-51075076-1307731156-512","j.schmidt","CN=j.schmidt,CN=Users,DC=lab,DC=local",0x6ca41,"Human subject - verify with admin"
+"9/26/2026, 3:42:13.802 PM",4728,"WIN-72DM6NS4BVH.lab.local",Domain,"WIN-72DM6NS4BVH$","Domain Admins","S-1-5-21-425975000-51075076-1307731156-512",hacker,"CN=hacker,CN=Users,DC=lab,DC=local",0x3e7,"SYSTEM session - high suspicion"

@@ -1,0 +1,8 @@
+﻿"TimeGenerated [UTC]",Computer,TargetUserName,PreAuthType,TicketEncryptionType,CrackDifficulty,IpAddress
+"9/27/2026, 12:30:28.466 PM","WIN-72DM6NS4BVH.lab.local","j.schmidt",0,0x12,"AES256 - slow to crack","::ffff:10.10.10.50"
+"9/27/2026, 12:29:01.217 PM","WIN-72DM6NS4BVH.lab.local","j.schmidt",0,0x12,"AES256 - slow to crack","::ffff:10.10.10.50"
+"9/26/2026, 3:05:34.544 PM","WIN-72DM6NS4BVH.lab.local","j.schmidt",0,0x17,"RC4 - fast to crack","::ffff:10.10.10.50"
+"9/26/2026, 2:24:34.846 PM","WIN-72DM6NS4BVH.lab.local","j.schmidt",0,0x17,"RC4 - fast to crack","::ffff:10.10.10.50"
+"9/26/2026, 2:22:00.666 PM","WIN-72DM6NS4BVH.lab.local","j.schmidt",0,0x17,"RC4 - fast to crack","::ffff:10.10.10.50"
+"9/26/2026, 2:20:57.930 PM","WIN-72DM6NS4BVH.lab.local","j.schmidt",0,0x17,"RC4 - fast to crack","::ffff:10.10.10.50"
+"9/26/2026, 2:11:05.188 PM","WIN-72DM6NS4BVH.lab.local","j.schmidt",0,0x12,"AES256 - slow to crack","::1"
