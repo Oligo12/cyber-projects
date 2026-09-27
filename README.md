@@ -2,7 +2,7 @@
 
 **Author:** Nikola Marković  
 **Status:** ongoing                                                                                                                              
-**Last updated:** 2026-09-21        
+**Last updated:** 2026-09-27      
 **Repo:** https://github.com/Oligo12/cyber-projects/                                                                   
 **Email:** nikola.z.markovic@pm.me                                                                                                 
 **LinkedIn:** https://www.linkedin.com/in/nikolazmarkovic/  
