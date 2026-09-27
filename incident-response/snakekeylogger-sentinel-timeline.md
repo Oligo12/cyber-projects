@@ -5,8 +5,8 @@
 - **Malware Family:** [SnakeKeylogger](../malware-analysis/SnakeKeylogger/Report.md)
 - **Initial Vector:** User-executed PowerShell loader script
 - **Primary Detections:**
-  - [PowerShell loader behavior (Event ID 4104 - ScriptBlock Logging)](../detection-lab/detections/kql/powerShell_in-memory_loader_behavior.md)
-  - [Delayed command execution + respawn watchdog loop (Sysmon)](../detection-lab/detections/kql/delayed_command_execution_respawn_loop.md)
+  - [PowerShell loader behavior (Event ID 4104 - ScriptBlock Logging)](../detection-lab/detections/malware/powerShell_in-memory_loader_behavior.md)
+  - [Delayed command execution + respawn watchdog loop (Sysmon)](../detection-lab/detections/malware/delayed_command_execution_respawn_loop.md)
 - **Severity:** High
 - **Detection Type:** Behavior-based (no static IOCs)
 - **Status:** Detected (lab simulation)
