@@ -42,7 +42,7 @@ Microsoft Sentinel lab covering two areas:
 | Host | Role | Appears in logs as |
 |---|---|---|
 | DC01 | Domain controller for `lab.local` (Windows Server 2025) | `WIN-72DM6NS4BVH` / `WIN-72DM6NS4BVH$` |
-| CLIENT01 | Domain-joined workstation | |
+| CLIENT01 | Domain-joined workstation | Not involved in the attack chain, so no events in the log samples |
 | Kali | Attacker | `10.10.10.50`, or `::ffff:10.10.10.50` in Kerberos events |
 
 **Telemetry:** Advanced Audit Policy, Sysmon and command-line process auditing, deployed domain-wide via GPO. Events are shipped through Azure Arc + AMA + Data Collection Rules to Log Analytics workspace `law-1` and queried in Sentinel.
@@ -74,6 +74,7 @@ Detections query `SecurityEvent` directly rather than ASIM parsers. Five of the 
 # Malware detections + response
 
 ## Topology
+This is a separate environment from the AD identity lab above.
 ![Lab topology](images/SentinelTopology.png)
 
 - **VMs:** Windows detonation client(s), AD DC/DNS, Ubuntu (Velociraptor server + webhook), pfSense.
