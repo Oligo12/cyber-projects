@@ -7,16 +7,16 @@
 **Email:** nikola.z.markovic@pm.me                                                                                                 
 **LinkedIn:** https://www.linkedin.com/in/nikolazmarkovic/  
 
+Hands-on security projects focused on SOC work: detection engineering in Microsoft Sentinel, incident response, and Windows internals.
+
 Current labs and projects:
 
-- [**malware-analysis/**](/malware-analysis) - isolated lab for learning manual Windows malware analysis (e.g., ProcMon, Wireshark). I document behaviors/TTPs per sample.
 - [**detection-lab/**](/detection-lab) - Microsoft Sentinel lab: six KQL detections for Active Directory attacks (password spray, Kerberoasting, AS-REP roasting, DCSync, privileged group changes, GPO abuse), each validated against my own attacks from Kali, plus malware behavior detections and a Sentinel -> Velociraptor response playbook.
 - [**edr-project/**](/edr-project) - custom Windows EDR prototype detecting in-memory process injection (hollowing, shellcode remote thread, image-based) via a kernel driver, user-mode hook DLL, and rules-based chain scoring. Includes a layered Authenticode trust subsystem (path + LOLBin denylist + embedded/catalog signature verification) for false-positive suppression. Validated against SnakeKeylogger and a Defender-evasive injection sample.
 - [**incident-response/**](/incident-response) - incident response case studies linking malware behavior, Sentinel detections, and analyst actions (triage -> containment -> recovery).
-- [**legacy-sentinel-lab/**](legacy-sentinel-lab) - Foundational Microsoft Sentinel lab (architecture + detections). The associated IR case study is in [**incident-response/**](/incident-response).
-- [**vulnerability-management-openvas-lab/**](/vulnerability-management-openvas-lab) - mini lab demonstrating vulnerability scanning, triage, validation, prioritization, and remediation using OpenVAS (Greenbone). Focused on analyst judgment and communication rather than exploit proof.
 - [**phishing-analysis/**](phishing-analysis) - triage of real phishing emails: header and `Received` chain analysis, SPF/DKIM/DMARC verdicts, URL and infrastructure assessment, IOC extraction, and written verdicts with recommended actions.
-
-Samples written up: SnakeKeylogger, Agent Tesla, Pulsar/Quasar RAT, WannaCry.
+- [**malware-analysis/**](/malware-analysis) - isolated lab for learning manual Windows malware analysis (e.g., ProcMon, Wireshark). I document behaviors/TTPs per sample. Samples written up: SnakeKeylogger, Agent Tesla, Pulsar/Quasar RAT, WannaCry.
+- [**vulnerability-management-openvas-lab/**](/vulnerability-management-openvas-lab) - mini lab demonstrating vulnerability scanning, triage, validation, prioritization, and remediation using OpenVAS (Greenbone). Focused on analyst judgment and communication rather than exploit proof.
+- [**legacy-sentinel-lab/**](legacy-sentinel-lab) - Foundational Microsoft Sentinel lab (architecture + detections). The associated IR case study is in [**incident-response/**](/incident-response).
 
 License: **The Unlicense** (public domain).
