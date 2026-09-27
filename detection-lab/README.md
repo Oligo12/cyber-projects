@@ -16,7 +16,6 @@ Microsoft Sentinel lab covering two areas:
 
 ## Notes
 - Lab-only learning and prototype content.
-- This is a long-term lab and will be updated as I advance.
 - Paths in this README are **relative** to this folder.
 
 ## What's here
@@ -30,7 +29,6 @@ Microsoft Sentinel lab covering two areas:
 ## Status
 - AD identity: 6 detections written and validated against lab attacks.
 - Response: kill-by-pid playbook wired.
-- Next: Okta and Entra ID identity detections, including an on-prem AD -> Entra pivot; memory dump and collection playbooks.
 
 ---
 
@@ -43,7 +41,7 @@ Microsoft Sentinel lab covering two areas:
 | CLIENT01 | Domain-joined workstation | Not involved in the attack chain, so no events in the log samples |
 | Kali | Attacker | `10.10.10.50`, or `::ffff:10.10.10.50` in Kerberos events |
 
-**Telemetry:** Advanced Audit Policy, Sysmon and command-line process auditing, deployed domain-wide via GPO. Events are shipped through Azure Arc + AMA + Data Collection Rules to Log Analytics workspace `law-1` and queried in Sentinel.
+**Telemetry:** Advanced Audit Policy and command-line process auditing, deployed domain-wide via GPO. Events are shipped through Azure Arc + AMA + Data Collection Rules to Log Analytics workspace `law-1` and queried in Sentinel. All six detections use Windows Security events only. Sysmon is also deployed and collected, but not used by these detections.
 
 ## Attack chain
 | Step | Attack | Tool | Detection |
@@ -56,13 +54,12 @@ Microsoft Sentinel lab covering two areas:
 | 6 | GPO created and linked at the domain root | PowerShell (GroupPolicy module) | [AD-DET-006](detections/ad-identity/AD-DET-006_gpo-change.md) |
 
 ## Findings from validation
-Every detection was run against the lab's own attack telemetry, and several first versions turned out to be wrong. The details are in each detection's "Lab finding" and "Limitations" notes. Highlights:
+Every detection was run against the lab's own attack telemetry. Highlights from that validation:
 
 - **Kerberoasting on Server 2025 negotiated AES**, so the classic RC4 filter (`0x17`) would have missed every attack. The detection uses request volume per account instead.
 - **kerbrute userenum only logs the wrong guesses.** Nonexistent usernames produce 4768 with Status 0x6; valid usernames leave no trace in the Security log.
 - **4728 alone only covers Domain Admins.** Enterprise Admins logs 4756 and the builtin groups and DnsAdmins log 4732. Groups are matched by SID, so renamed or localized names (for example "Domänen-Admins") are still caught.
 - **4662 has no source IP.** The DCSync detection recovers it by joining to the 4624 logon on the same logon ID, which resolves the dump to Kali.
-- **The first password spray version misreported success** in two ways (an untimed join, and missing accounts that succeeded on the first try). Both were found in the lab data and fixed.
 
 ## Design notes
 Detections query `SecurityEvent` directly rather than ASIM parsers. Five of the six rely on AD-specific fields (PreAuthType, replication GUIDs, gPLink) that no ASIM schema covers. Password spray is the one candidate for ASIM Authentication normalization, but the built-in Windows parser does not cover the Kerberos events (4768, 4771) the detection depends on.
@@ -96,7 +93,6 @@ This is a separate environment from the AD identity lab above.
 
 **Velociraptor artifacts (VQL)**
 - **Used:** `Windows.Remediation.Process` (terminate by PID/name)
-- **Planned:** `Generic.System.Pstree`, `Windows.Memory.ProcessDump`, `Windows.Remediation.Quarantine`
 
 ## Simplified data flow
 1. Sysmon/Windows -> AMA -> Log Analytics -> Sentinel.
