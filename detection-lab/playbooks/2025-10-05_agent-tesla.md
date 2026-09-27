@@ -2,14 +2,14 @@
 
 ## Summary 
 - Alerts fired on:
-  - [AppData-Local first-seen EXE (new folder)](../detections/kql/appdata-local-new-exe.md)
-  - [Startup-folder persistence (drop OR execute)](../detections/kql/startup-persistence.md)
-  - [User-writable parent -> AppData/Temp drop (3m window)](../detections/kql/user-writable-parent-to-temp-appdata.md)
+  - [AppData-Local first-seen EXE (new folder)](../detections/malware/appdata-local-new-exe.md)
+  - [Startup-folder persistence (drop OR execute)](../detections/malware/startup-persistence.md)
+  - [User-writable parent -> AppData/Temp drop (3m window)](../detections/malware/user-writable-parent-to-temp-appdata.md)
 - [Playbook](../playbooks/kill-by-pid-velociraptor.md) posted `{client_id, pid}` to webhook -> Velociraptor killed PID. Lab-only.
 - [Malware sample](../../malware-analysis/AgentTesla/Report.md) previously analyzed in [The Malware Analysis Lab](../../malware-analysis/).
 
 ## Trigger
-- Detection: [User-writable parent -> AppData/Temp drop (3m window)](../detections/kql/user-writable-parent-to-temp-appdata.md)
+- Detection: [User-writable parent -> AppData/Temp drop (3m window)](../detections/malware/user-writable-parent-to-temp-appdata.md)
 - Host/User: client01 / LAB\user
 - PID: 3112
 
