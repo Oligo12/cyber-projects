@@ -1,0 +1,2 @@
+﻿"TimeGenerated [UTC]",EventOriginalType,GrantedBy,TargetUser,TargetGroup,RoleId,RoleName,Severity
+"9/28/2026, 12:25:04.215 PM","user.account.privilege.grant","[ emailAddress ]@pm.me","[ emailAddress ]+eve@gmail.com",,SuperOrgAdmin,"Super Organization Administrator",High

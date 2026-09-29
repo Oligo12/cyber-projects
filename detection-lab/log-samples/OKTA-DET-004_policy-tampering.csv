@@ -1,0 +1,3 @@
+﻿"TimeGenerated [UTC]",Actor,EventOriginalType,PolicyName,PolicyType,RuleName,IsRecentAdmin,MinutesSinceAdminGrant,Severity
+"9/28/2026, 12:26:45.454 PM","[ emailAddress ]+eve@gmail.com","policy.lifecycle.create","Lab-Temp","OKTA_SIGN_ON",,true,"1.7",High
+"9/28/2026, 12:29:25.759 PM","[ emailAddress ]+eve@gmail.com","policy.lifecycle.delete","Lab-Temp","OKTA_SIGN_ON",,true,"4.4",High

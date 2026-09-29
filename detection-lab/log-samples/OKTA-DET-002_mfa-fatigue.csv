@@ -1,0 +1,2 @@
+﻿ActorUsername,SrcIpAddr,SrcIps,Country,City,"FirstPush [UTC]","LastPush [UTC]",PushCount,Denied,Approved,ApprovalIps,Severity
+"[ emailAddress ]+dave@gmail.com","[ attacker VPN IP ]","[""[ attacker VPN IP ]""]",Serbia,Belgrade,"9/28/2026, 12:09:11.871 PM","9/28/2026, 12:09:56.058 PM",6,5,1,"[""[ victim phone IP ]""]",High
