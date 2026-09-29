@@ -12,6 +12,7 @@
 Microsoft Sentinel lab covering two areas:
 
 - **AD identity attacks:** a small Active Directory domain attacked from Kali with six common techniques (password spray, Kerberoasting, AS-REP roasting, DCSync, privileged group addition, GPO modification). Each attack has a KQL detection validated against the lab's own telemetry, with log samples and documented blind spots.
+- **Okta identity attacks:** a free Okta Integrator tenant attacked via browser over VPN with four techniques (password spray, MFA fatigue/push bombing, admin role grant, policy tampering). Each attack has a KQL detection validated against Okta System Log telemetry, benchmarked against Microsoft's built-in analytic rule templates.
 - **Malware behavior + response:** KQL detections built from behaviors observed in my malware analyses, plus a Sentinel playbook -> secure webhook -> Velociraptor API workflow that terminates a target PID on alert.
 
 ## Notes
@@ -21,6 +22,7 @@ Microsoft Sentinel lab covering two areas:
 ## What's here
 - **[detections/](detections):** all KQL detections, with an index table.
   - **[ad-identity/](detections/ad-identity):** 6 AD attack detections (AD-DET-001 to 006).
+  - **[okta-identity/](detections/okta-identity):** 4 Okta attack detections (OKTA-DET-001 to 004).
   - **[malware/](detections/malware):** 7 behavior detections from malware analysis.
 - **[log-samples/](log-samples):** query output from the lab for each AD detection.
 - **[playbooks/](playbooks):** kill-by-pid response playbook and evidence of it working.
@@ -28,6 +30,8 @@ Microsoft Sentinel lab covering two areas:
 
 ## Status
 - AD identity: 6 detections written and validated against lab attacks.
+- Okta identity: 4 detections written and validated against lab attacks.
+- Malware behavior: 7 detections written from malware analysis.
 - Response: kill-by-pid playbook wired.
 
 ---
@@ -63,6 +67,37 @@ Every detection was run against the lab's own attack telemetry. Highlights from 
 
 ## Design notes
 Detections query `SecurityEvent` directly rather than ASIM parsers. Five of the six rely on AD-specific fields (PreAuthType, replication GUIDs, gPLink) that no ASIM schema covers. Password spray is the one candidate for ASIM Authentication normalization, but the built-in Windows parser does not cover the Kerberos events (4768, 4771) the detection depends on.
+
+---
+
+# Okta identity detections
+
+## Lab environment
+| Component | Role |
+|---|---|
+| Okta tenant | Free Integrator Plan (`pm-integrator-9567628`), 5 test users |
+| alice, bob, carol | Spray targets, no Okta Verify enrolled |
+| dave | MFA fatigue victim, Okta Verify enrolled |
+| eve | Starts with no admin rights, promoted mid-attack |
+| Attacker vantage point | Browser over Proton VPN (Serbian exit node) |
+
+**Telemetry:** Okta System Log ingested via Sentinel's Okta Single Sign-On (CCF) connector into `OktaV2_CL`, workspace `law-1`. All four detections query this table directly, not ASIM.
+
+## Attack chain
+| Step | Attack | Detection |
+|---|---|---|
+| 1 | Password spray against alice, bob, carol; bob's real password correct on round 3 | [OKTA-DET-001](detections/okta-identity/OKTA-DET-001_password-spray.md) |
+| 2 | MFA fatigue against dave: 6 pushes spammed, 5 denied, 6th approved | [OKTA-DET-002](detections/okta-identity/OKTA-DET-002_mfa-fatigue.md) |
+| 3 | eve granted Super Organization Administrator | [OKTA-DET-003](detections/okta-identity/OKTA-DET-003_new-admin.md) |
+| 4 | eve creates then deletes a throwaway sign-on policy, ~1 and ~4 min after her own grant | [OKTA-DET-004](detections/okta-identity/OKTA-DET-004_policy-tampering.md) |
+
+## Findings from validation
+- Microsoft's built-in Okta templates would not have fired on any of the four simulated attacks - thresholds tuned for large tenants (15+ users for spray, 10+ pushes for fatigue) or dependent on Okta's risk engine flagging the session, which a fresh account with no sign-in history never triggers.
+- `OktaV2_CL` already ships partially ASIM-shaped field names (`SrcIpAddr`, `EventResult`, `ActorUsername`) via the CCF connector, unlike the deprecated `Okta_CL` table.
+- `OriginalTarget` is a dynamic array whose element order isn't guaranteed across event types, so target/role/policy extraction uses `mv-apply` matched by `type`, with a positional fallback for the one shape observed in this lab.
+
+## Design notes
+Detections query `OktaV2_CL` directly. ASIM normalization was intentionally skipped for Okta-only detections (see design notes on AD, same reasoning) but is planned for a single cross-source AD+Okta password spray detection once both identity sources are complete.
 
 ---
 
