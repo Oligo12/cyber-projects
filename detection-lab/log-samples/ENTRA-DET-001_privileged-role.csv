@@ -1,0 +1,2 @@
+﻿"TimeGenerated [UTC]",OperationName,ActorType,ActorName,ActorId,ActorIP,TargetType,TargetName,TargetId,IsGuestTarget,RoleName,RoleTemplateId,Severity,CorrelationId
+"9/29/2026, 11:26:35.381 AM","Add member to role",User,"[ emailAddress ]_pm.me#EXT#@[ emailAddress ]pm.onmicrosoft.com","0eb61948-ca97-4a68-b222-d16fec39935e","[ IP ]",User,"audit-test@[ emailAddress ]pm.onmicrosoft.com","1ace905f-534f-4cfe-b807-69d699a92b4d",false,"Global Administrator","62e90394-69f5-4237-9190-012177145e10",High,"73b1d6fe-bf56-4fb2-8bf9-27f867538ecc"
