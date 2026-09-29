@@ -25,6 +25,15 @@ Validated against attacks simulated from a browser over VPN in a free Okta Integ
 | [OKTA-DET-003](okta-identity/OKTA-DET-003_new-admin.md) | New admin role grant | T1098.003 | user.account.privilege.grant, group.privilege.grant | Medium (high if super/org admin) |
 | [OKTA-DET-004](okta-identity/OKTA-DET-004_policy-tampering.md) | Policy tampering shortly after admin grant | T1556.009 | policy.lifecycle.*, policy.rule.*, user.account.privilege.grant | Medium (high if recent admin) |
 
+## Entra ID identity
+Validated against attacks simulated through the Entra admin center and Microsoft Graph PowerShell in a free Entra ID tenant. Log samples for each detection are in [log-samples/](../log-samples).
+
+| ID | Detection | MITRE | Operations | Severity |
+|---|---|---|---|---|
+| [ENTRA-DET-001](entra-identity/ENTRA-DET-001_privileged-role.md) | Privileged directory role assignment | T1098.003 | Add member to role, Add eligible member to role | Medium (high if privileged role) |
+| [ENTRA-DET-002](entra-identity/ENTRA-DET-002_app-credential.md) | Credential added to app or service principal | T1098.001 | Update application – Certificates and secrets management, Add service principal credentials | High (medium if same actor created the app recently) |
+| [ENTRA-DET-003](entra-identity/ENTRA-DET-003_consent-grant.md) | OAuth permission grant with high-risk scopes | T1528, T1098.003 | Consent to application, Add delegated permission grant, Add app role assignment to service principal | Medium (high if risky scopes) |
+
 ## Malware behavior
 Built from behaviors observed in my malware analyses.
 
