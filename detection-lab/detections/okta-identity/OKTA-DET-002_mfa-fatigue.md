@@ -63,7 +63,8 @@ False positives: legitimate multi-app re-authentication storms, or Okta's own pu
 // 3. Approved > 0 (High) = a prompt was accepted mid-burst. Escalate.
 //    Denied > 0 as well makes compromise near-certain.
 // 4. No automatic link to OKTA-DET-001. Both surface the requesting IP,
-//    so pivot manually.
+//    so pivot manually, or wire up entity mapping on IP in Sentinel to
+//    let incident correlation do this automatically.
 // 5. geo_info_from_ip_address() can return nulls for VPN/hosting ranges.
 //    Treat empty Country/City as unresolved, not safe.
 // 6. Counts cover the whole 24h, not one burst. Microsoft's template
