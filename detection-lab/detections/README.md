@@ -15,6 +15,16 @@ Validated against attacks from Kali in the lab domain. Log samples for each dete
 | [AD-DET-005](ad-identity/AD-DET-005_new-domain-admin.md) | Privileged group membership addition | T1098.007 | 4728, 4732, 4756 | High |
 | [AD-DET-006](ad-identity/AD-DET-006_gpo-change.md) | GPO linking or modification | T1484.001 | 5136 | High |
 
+## Okta identity
+Validated against attacks simulated from a browser over VPN in a free Okta Integrator tenant. Log samples for each detection are in [log-samples/](../log-samples).
+
+| ID | Detection | MITRE | Event types | Severity |
+|---|---|---|---|---|
+| [OKTA-DET-001](okta-identity/OKTA-DET-001_password-spray.md) | Password spray | T1110.003 | user.session.start, user.authentication.auth_via_mfa | Medium (high if succeeded) |
+| [OKTA-DET-002](okta-identity/OKTA-DET-002_mfa-fatigue.md) | MFA fatigue (push bombing) | T1621 | system.push.send_factor_verify_push, user.authentication.auth_via_mfa | Medium (high if approved) |
+| [OKTA-DET-003](okta-identity/OKTA-DET-003_new-admin.md) | New admin role grant | T1098.003 | user.account.privilege.grant, group.privilege.grant | Medium (high if super/org admin) |
+| [OKTA-DET-004](okta-identity/OKTA-DET-004_policy-tampering.md) | Policy tampering shortly after admin grant | T1556.009 | policy.lifecycle.*, policy.rule.*, user.account.privilege.grant | Medium (high if recent admin) |
+
 ## Malware behavior
 Built from behaviors observed in my malware analyses.
 
