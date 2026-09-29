@@ -100,7 +100,7 @@ Detections query `SecurityEvent` directly rather than ASIM parsers. Five of the 
 - `OriginalTarget` is a dynamic array whose element order isn't guaranteed across event types, so target/role/policy extraction uses `mv-apply` matched by `type`, with a positional fallback for the one shape observed in this lab.
 
 ## Design notes
-Detections query `OktaV2_CL` directly. ASIM normalization was intentionally skipped for Okta-only detections (see design notes on AD, same reasoning) but is planned for a single cross-source AD+Okta password spray detection once both identity sources are complete.
+Detections query `OktaV2_CL` directly. ASIM normalization was intentionally skipped for Okta-only detections (see design notes on AD, same reasoning). A cross-source AD + Okta password spray built on ASIM is a possible future addition.
 
 ---
 
