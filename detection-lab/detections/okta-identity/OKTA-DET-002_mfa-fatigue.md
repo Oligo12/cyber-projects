@@ -38,7 +38,7 @@ Microsoft ships a built-in "MFA Fatigue (OKTA)" analytic rule, but it only fires
 
 **Source IP is the requester, not the victim.** The IP on a push-send event is the client that started the login which triggered the push - in an attack, that's the attacker's session, not the victim's phone. `SrcIpAddr` (one value, used for geo) and `SrcIps` (all distinct values, up to 10) are taken from the push events, so they point at whoever is generating the prompts. In this lab it resolved to the same VPN exit node used in the OKTA-DET-001 spray.
 
-**No automatic spray correlation.** This query doesn't join against OKTA-DET-001 results. Because both rules surface the attacker's IP, matching them up is a quick manual pivot for now.
+**No automatic spray correlation.** This query doesn't join against OKTA-DET-001 results. Because both rules surface the attacker's IP, they would be matched through a manual pivot or the wired up entity mapping in Sentinel to let incident correlation do this automatically.
 
 **Geo enrichment.** `Country`/`City` come from `geo_info_from_ip_address()` on `SrcIpAddr` - the fastest triage signal available here, since Okta has no domain-equivalent field to filter on. A push requested from a country the user has never logged in from is a strong escalation cue.
 
