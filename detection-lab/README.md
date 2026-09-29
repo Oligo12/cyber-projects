@@ -9,10 +9,11 @@
 [Back to Main README](../README.md)
 
 ## Summary
-Microsoft Sentinel lab covering two areas:
+Microsoft Sentinel lab covering:
 
 - **AD identity attacks:** a small Active Directory domain attacked from Kali with six common techniques (password spray, Kerberoasting, AS-REP roasting, DCSync, privileged group addition, GPO modification). Each attack has a KQL detection validated against the lab's own telemetry, with log samples and documented blind spots.
 - **Okta identity attacks:** a free Okta Integrator tenant attacked via browser over VPN with four techniques (password spray, MFA fatigue/push bombing, admin role grant, policy tampering). Each attack has a KQL detection validated against Okta System Log telemetry, benchmarked against Microsoft's built-in analytic rule templates.
+- **Entra ID identity attacks:** a free Entra ID tenant used to simulate three cloud persistence and escalation techniques (privileged role grant, credential added to an app, OAuth permission grant) through the Entra admin center and Microsoft Graph PowerShell. Each attack has a KQL detection validated against Entra AuditLogs telemetry.
 - **Malware behavior + response:** KQL detections built from behaviors observed in my malware analyses, plus a Sentinel playbook -> secure webhook -> Velociraptor API workflow that terminates a target PID on alert.
 
 ## Notes
@@ -23,17 +24,19 @@ Microsoft Sentinel lab covering two areas:
 - **[detections/](detections):** all KQL detections, with an index table.
   - **[ad-identity/](detections/ad-identity):** 6 AD attack detections (AD-DET-001 to 006).
   - **[okta-identity/](detections/okta-identity):** 4 Okta attack detections (OKTA-DET-001 to 004).
+  - **[entra-identity/](detections/entra-identity):** 3 Entra ID attack detections (ENTRA-DET-001 to 003).
   - **[malware/](detections/malware):** 7 behavior detections from malware analysis.
-- **[log-samples/](log-samples):** query output from the lab for each AD detection.
+- **[log-samples/](log-samples):** query output from the lab for each identity detection.
 - **[playbooks/](playbooks):** kill-by-pid response playbook and evidence of it working.
 - **images/:** images used in this section of the repo.
 
 ## Status
 - AD identity: 6 detections written and validated against lab attacks.
 - Okta identity: 4 detections written and validated against lab attacks.
+- Entra ID identity: 3 detections written and validated against lab attacks.
 - Malware behavior: 7 detections written from malware analysis.
 - Response: kill-by-pid playbook wired.
-
+  
 ---
 
 # AD identity detections
@@ -98,6 +101,41 @@ Detections query `SecurityEvent` directly rather than ASIM parsers. Five of the 
 
 ## Design notes
 Detections query `OktaV2_CL` directly. ASIM normalization was intentionally skipped for Okta-only detections (see design notes on AD, same reasoning) but is planned for a single cross-source AD+Okta password spray detection once both identity sources are complete.
+
+---
+
+# Entra ID identity detections
+
+## Lab environment
+| Component | Role |
+|---|---|
+| Entra tenant | Free tier, the Default Directory created with the Azure subscription |
+| Admin account | Tenant's Global Administrator, a personal Microsoft account (logs under two UPNs, including a `#EXT#` form) |
+| audit-test | Test user, no roles initially |
+| lab-test-app | App registration used for the credential and permission grants |
+| lab-test-app2 | App used for the API-only grant through Graph PowerShell |
+
+**Telemetry:** Microsoft Entra ID connector (Content Hub solution), which creates a diagnostic setting that streams AuditLogs into workspace `law-1`. Only AuditLogs is enabled, since sign-in logs require Entra ID P1 or P2. All three detections query `AuditLogs` directly, not ASIM.
+
+## Attack chain
+| Step | Attack | Detection |
+|---|---|---|
+| 1 | audit-test granted Global Administrator | [ENTRA-DET-001](detections/entra-identity/ENTRA-DET-001_privileged-role.md) |
+| 2 | lab-test-app registered, client secret added one minute later | [ENTRA-DET-002](detections/entra-identity/ENTRA-DET-002_app-credential.md) |
+| 3 | Tenant-wide admin consent for Mail.Read, offline_access and User.Read (delegated) to lab-test-app | [ENTRA-DET-003](detections/entra-identity/ENTRA-DET-003_consent-grant.md) |
+| 4 | Mail.Read application permission granted to lab-test-app via Grant admin consent | [ENTRA-DET-003](detections/entra-identity/ENTRA-DET-003_consent-grant.md) |
+| 5 | Single-user consent to Microsoft Graph Command Line Tools while connecting to Graph PowerShell | [ENTRA-DET-003](detections/entra-identity/ENTRA-DET-003_consent-grant.md) |
+| 6 | Mail.ReadWrite delegated grant created for lab-test-app2 through Graph PowerShell, with no consent prompt | [ENTRA-DET-003](detections/entra-identity/ENTRA-DET-003_consent-grant.md) |
+
+## Findings from validation
+- **AuditLogs arrived out of order and with variable lag** (a few minutes to over an hour) after connector setup. One setup event still hadn't arrived hours later, while events logged after it were already in Sentinel.
+- **The credential operation name contains an en dash and a trailing space** (`Update application – Certificates and secrets management `), so an exact match with a normal hyphen returns nothing.
+- **App creation logs a "secrets management" event with no key added.** Matching on the operation name alone would fire on every new app. Validation also caught a null-handling bug where that empty event still fired, fixed before release.
+- **The same admin appears under two different UPNs** across events (`name@pm.me` and a `#EXT#` form), so all actor logic keys on the object ID.
+- **Permission grants have three separate paths.** A delegated grant created through Graph PowerShell logs no consent event at all, `IsAdminConsent` is True even when an admin consents only for themselves, and `IsAppOnly` stayed False for an application permission. Scope and blast radius are therefore read from the grant events themselves.
+
+## Design notes
+Detections query `AuditLogs` directly. All three depend on Entra-specific values nested in `TargetResources.modifiedProperties` (role TemplateIds, KeyDescription, consent permission strings), which a normalized schema doesn't carry. Same reasoning as AD and Okta.
 
 ---
 
