@@ -34,7 +34,7 @@ Microsoft Sentinel lab covering:
 - AD identity: 6 detections written and validated against lab attacks.
 - Okta identity: 4 detections written and validated against lab attacks.
 - Entra ID identity: 3 detections written and validated against lab attacks.
-- Malware behavior: 7 detections written from malware analysis.
+- Malware behavior: 7 detections written and validated against telemetry from samples detonated in the lab
 - Response: kill-by-pid playbook wired.
   
 ---
