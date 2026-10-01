@@ -1,6 +1,6 @@
 # EDR Project - Process Injection Detection (v1)
 
-A custom Windows endpoint detection prototype (the "D" of EDR), built from scratch in C/C++, focused on detecting in-memory process injection across user-mode and kernel telemetry sources. Response automation is out of scope for v1 - see `KNOWN_LIMITATIONS.md`.
+A custom Windows endpoint detection prototype (the "D" of EDR), written in C/C++ with heavy AI assistance, focused on detecting in-memory process injection across user-mode and kernel telemetry sources.
 
 **Version status:** v1 complete; not under active development. Validated against real malware samples that bypass Microsoft Defender at time of testing.
 
@@ -8,7 +8,7 @@ A custom Windows endpoint detection prototype (the "D" of EDR), built from scrat
 
 **Author:** Nikola Marković  
 **Project status:** v1 complete                                                                                                                           
-**Last updated:** 2026-05-04          
+**Last updated:** 2026-10-01         
 **Repo:** https://github.com/Oligo12/cyber-projects/                                                                   
 **Email:** nikola.z.markovic@pm.me                                                                                                 
 **LinkedIn:** https://www.linkedin.com/in/nikolazmarkovic/  
@@ -109,7 +109,9 @@ This is a defensive monitoring tool. The hooking techniques used for telemetry a
 
 ### Development context
 
-Developed solo over approximately two months as a learning exercise and portfolio piece, with AI-assisted iteration (Claude). Architectural decisions, malware sample selection, validation methodology, and design tradeoffs (e.g., the layered trust subsystem, the scope decision to add catalog signature support, the choice to hook at the Nt-layer rather than Win32) were driven by me; implementation was iterative collaboration. Each detection layer was empirically validated against real malware samples before moving to the next.
+Developed solo over about two months as a learning exercise and portfolio piece. The code was written with heavy AI assistance (Claude); I'm not a developer, and the goal was understanding EDR mechanics rather than software engineering.
+
+My own work: design decisions (choosing between implementation options and researching how production EDRs handle the same problems), verifying AI output against documentation when it was wrong, troubleshooting, malware sample selection, setting up the test lab, and running and validating each detection layer. I can explain the design tradeoffs documented in ARCHITECTURE.md and KNOWN_LIMITATIONS.md.
 
 This project was built to develop hands-on understanding of Windows internals, EDR mechanics, and malware behavior.
 
