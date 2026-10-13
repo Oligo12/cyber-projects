@@ -16,7 +16,7 @@ Current labs and projects:
 - [**incident-response/**](/incident-response) - incident response case studies linking malware behavior, Sentinel detections, and analyst actions (triage -> containment -> recovery).
 - [**phishing-analysis/**](phishing-analysis) - triage of real phishing emails: header and `Received` chain analysis, SPF/DKIM/DMARC verdicts, URL and infrastructure assessment, IOC extraction, and written verdicts with recommended actions.
 - [**malware-analysis/**](/malware-analysis) - isolated lab for learning manual Windows malware analysis (e.g., ProcMon, Wireshark). I document behaviors/TTPs per sample. Samples written up: SnakeKeylogger, Agent Tesla, Pulsar/Quasar RAT, WannaCry.
-- [**vulnerability-management-openvas-lab/**](/vulnerability-management-openvas-lab) - mini lab demonstrating vulnerability scanning, triage, validation, prioritization, and remediation using OpenVAS (Greenbone). Focused on analyst judgment and communication rather than exploit proof.
+- [**vulnerability-management-lab/**](/vulnerability-management-lab) - vulnerability management lab using Nessus Essentials and OpenVAS (Greenbone): scanning, triage, validation, prioritization, remediation and verification. Featured finding takes one critical (an unauthenticated root backdoor) end to end, including manual validation, root-cause analysis, a verified fix, and a two-scanner comparison.
 - [**legacy-sentinel-lab/**](legacy-sentinel-lab) - Foundational Microsoft Sentinel lab (architecture + detections). The associated IR case study is in [**incident-response/**](/incident-response).
 
 License: **The Unlicense** (public domain).
