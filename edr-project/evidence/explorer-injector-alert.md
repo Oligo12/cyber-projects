@@ -33,13 +33,13 @@ From a clean run, post-cleanup, post-trust-gate:
 2. **The sample plants a 4 KB private executable region** in explorer's address space at `0x3220000`. Tiny private-exec region triggers the shellcode-region bonus.
    Score: **+10** (tiny region)
 
-3. **A new thread is created inside `explorer.exe`** pointing at the planted region — the start address (`0x3220000`) matches the recently-allocated private-exec region.
+3. **A new thread is created inside `explorer.exe`** pointing at the planted region  the start address (`0x3220000`) matches the recently-allocated private-exec region.
    Score: **+50** (thread create on private-exec region)
 
 **Total chain score: 80.** ALERT threshold met.
 **Technique:** `SHELLCODE_REMOTE_THREAD` (private executable destination, not image-backed).
 
-> Note on log ordering: the `THREAD_CREATE` line for the explorer thread appears after the `[ALERT]` line in the excerpt above. That's a logging quirk — the thread event is what scored +50 and triggered the alert, but the human-readable `THREAD_CREATE` log line and the `[ALERT]` line come from different code paths and interleave in the output. The alert math is `20 + 10 + 50 = 80`, with the +50 sourced from this exact thread event.
+> Note on log ordering: the `THREAD_CREATE` line for the explorer thread appears after the `[ALERT]` line in the excerpt above. That's a logging quirk - the thread event is what scored +50 and triggered the alert, but the human-readable `THREAD_CREATE` log line and the `[ALERT]` line come from different code paths and interleave in the output. The alert math is `20 + 10 + 50 = 80`, with the +50 sourced from this exact thread event.
 
 
 ---
@@ -48,7 +48,7 @@ From a clean run, post-cleanup, post-trust-gate:
 
 The source process lives under `C:\Users\<user>\Desktop\`, which is not a trusted system directory. Layer 2 of the trust gate (trusted-directory prefix check) fails immediately, so the signature check never even runs.
 
-For the inverse — chains with the same primitive pattern that *are* suppressed because the source IS a trusted system binary — see [`trust-bypass.md`](trust-bypass.md).
+For the inverse - chains with the same primitive pattern that *are* suppressed because the source IS a trusted system binary - see [`trust-bypass.md`](trust-bypass.md).
 
 ---
 
