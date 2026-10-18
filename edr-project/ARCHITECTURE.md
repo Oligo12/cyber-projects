@@ -52,10 +52,11 @@ The EDR consists of three components:
    │  Loaded into (almost) every  │
    │  userland process.           │
    │  Inline-hooks 3 Nt syscalls  │
-   │  and forwards cross-process  │
-   │  calls to the client via the │
-   │  driver as WRITE/PROTECT/    │
-   │  RESUME events.              │
+   │  and forwards them to the    │
+   │  client via the driver as    │
+   │  WRITE/PROTECT/RESUME events │
+   │  (write and protect only     │
+   │  when cross-process).        │
    └──────────────────────────────┘
 ```
 
@@ -295,7 +296,7 @@ So: kernel for the things kernel can see, user-mode hooks for the things kernel 
 
 When a process is created, the kernel callback fires with whatever context is available at that moment. Some metadata (token integrity, elevation type, privileges, user SID) is not yet populated by the kernel at process-create time - it's filled in later as Windows finishes setting up the process.
 
-So the EDRClient queues a `SECCTX_WORK_ITEM` for each new process and retries token resolution on a backoff. `ProcessSecCtxQueue()` runs every main-loop iteration, attempts `OpenProcess` + `OpenProcessToken` + `GetTokenInformation`, and either marks the entry `SecCtxReady` on success or retries with increasing delay. After enough retries, the entry is dropped - most of the time the process has already exited (very short-lived processes hit this path).
+So the EDRClient queues a `SECCTX_WORK_ITEM` for each new process and retries token resolution. `ProcessSecCtxQueue()` runs every main-loop iteration, attempts `OpenProcess` + `OpenProcessToken` + `GetTokenInformation`, and either marks the entry `SecCtxReady` on success or retries 100 ms later. After 5 failed retries, the entry is dropped - most of the time the process has already exited (very short-lived processes hit this path).
 
 In the current build, nothing consumes the resolved context. The detection rules do not use it (scoring is based on behavior alone), and the `PROC_CREATE` log line, the only place these fields are printed, is written right after the work item is queued, so it shows `?` before resolution finishes. See `KNOWN_LIMITATIONS.md`.
 
