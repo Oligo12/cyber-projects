@@ -8,7 +8,7 @@ A custom Windows endpoint detection prototype (the "D" of EDR), written in C/C++
 
 **Author:** Nikola Marković  
 **Project status:** v1 complete                                                                                                                           
-**Last updated:** 2026-10-01         
+**Last updated:** 2026-10-18         
 **Repo:** https://github.com/Oligo12/cyber-projects/                                                                   
 **Email:** nikola.z.markovic@pm.me                                                                                                 
 **LinkedIn:** https://www.linkedin.com/in/nikolazmarkovic/  
@@ -20,7 +20,7 @@ A custom Windows endpoint detection prototype (the "D" of EDR), written in C/C++
 | Test                                                              | Outcome                                                |
 |-------------------------------------------------------------------|--------------------------------------------------------|
 | Unidentified Explorer.exe injector (Defender-evasive)    | Detected as `SHELLCODE_REMOTE_THREAD` on every successful detonation |
-| SnakeKeylogger PowerShell variant (17 injection chains across 3 detonations) | Every chain detected as `PROCESS_HOLLOWING`, despite source being signed-Microsoft PowerShell in System32 |
+| SnakeKeylogger PowerShell variant (3 detonations) | 17 hollowing chains detected as `PROCESS_HOLLOWING`, despite source being signed-Microsoft PowerShell in System32 |
 | MusNotification.exe + taskhostw.exe (legitimate Windows behavior with injection-like primitives) | 10 chains suppressed via trust subsystem; zero false-positive alerts |
 | AgentTesla (32-bit malware)                                       | Limitation: kernel callbacks observe it, but the user-mode hook DLL is x64-only - chain doesn't accumulate enough score. Documented in `KNOWN_LIMITATIONS.md`. |
 
@@ -42,7 +42,7 @@ For the full technical writeup, see [`ARCHITECTURE.md`](ARCHITECTURE.md).
 |------------------------------------|-------------|----------------------------|
 | Process Hollowing                  | T1055.012   | SnakeKeylogger             |
 | Shellcode Remote Thread            | T1055       | Defender-evasive injector  |
-| Image-Based Injection              | T1055       | -                          |
+| Image-Based Injection              | T1055       | Not yet validated against a sample |
 
 For full detection writeups including the chain logic and validating samples, see [`DETECTIONS.md`](DETECTIONS.md).
 
