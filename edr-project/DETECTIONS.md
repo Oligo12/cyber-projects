@@ -92,8 +92,6 @@ The trust gate runs at 60 and 80 boundaries (cheaply, via per-chain cache). It d
 
 ## What's NOT detected
 
-Listed for honesty:
-
 - **DLL Sideloading (T1574.002)** — out of v1 scope. Needs filesystem-side telemetry (minifilter) to detect the abuse pattern (legitimate signed binary loading attacker-controlled DLL from a writable directory). Not implemented.
 - **APC Injection (T1055.004)** — needs an `NtQueueApcThread` user-mode hook (or ETW-TI's APC events). Not implemented.
 - **AtomBombing / Process Doppelgänging** — exotic injection variants relying on transactional NTFS / atom tables. Not in scope; v2+ if ever.
