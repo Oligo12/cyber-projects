@@ -63,7 +63,7 @@ Typical path: handle + write + private-exec thread = 100 (140 if the thread star
 
 ## T1055 - Image-Based Injection
 
-**Pattern observed.** A source process opens a handle into the target, allocates or maps a memory region, writes a complete PE image (DLL or EXE) into that region instead of raw shellcode, and creates a thread starting at the entry point of the mapped image.
+**Pattern observed.** A source process opens a handle into the target, overwrites code inside a module already loaded there (image-backed `MEM_IMAGE` memory, e.g. a benign DLL), and creates a thread that starts inside the overwritten region. This is commonly called module stomping. A PE written into freshly allocated memory is `MEM_PRIVATE`, not image-backed, and is scored on the shellcode path instead.
 
 **How it's detected.** The thread create event fires with `ThreadStartType` indicating an image-mapped region rather than private memory:
 
