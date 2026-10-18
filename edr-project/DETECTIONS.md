@@ -14,13 +14,13 @@ This document lists what the EDR detects, mapped to MITRE ATT&CK where applicabl
 
 All three fire as `[ALERT] Remote Injection | … technique=<name> confidence=HIGH score=<N>` once the chain crosses the score-80 threshold (see `ARCHITECTURE.md` §4 for scoring model).
 
-A second log severity, `[SUSPICIOUS]`, fires at score-60 to leave a forensic trail when execution is missed (direct syscalls, hook bypass, race conditions). One SUSPICIOUS line per chain — not per primitive event.
+A second log severity, `[SUSPICIOUS]`, fires at score-60 to leave a forensic trail when execution is missed (direct syscalls, hook bypass, race conditions). One SUSPICIOUS line per chain  not per primitive event.
 
 A third log line, `[TRUST_BYPASS]`, records when a chain that *would* have alerted was suppressed by the trust subsystem because the source was a signed system binary. This is intentional: silent suppression is bad practice; recording the suppression keeps the audit trail.
 
 ---
 
-## T1055.012 — Process Hollowing
+## T1055.012 - Process Hollowing
 
 **Pattern observed.** A parent process creates a child in a suspended state, opens a handle into the child with write/operation/create-thread access, writes shellcode or a replacement image into the child's address space, and resumes the child's main thread to begin execution of the planted code.
 
@@ -40,7 +40,7 @@ A clean hollowing chain reaches score 150. Threshold for `[ALERT]` is 80, so the
 
 ---
 
-## T1055 — Shellcode Remote Thread Injection
+## T1055 - Shellcode Remote Thread Injection
 
 **Pattern observed.** A source process opens a handle into a target process (typically *not* its child), writes shellcode into the target's address space, optionally flips the protection of that region to PAGE_EXECUTE_READWRITE or PAGE_EXECUTE_READ, then creates a thread inside the target whose start address points into the planted region.
 
@@ -51,7 +51,7 @@ A clean hollowing chain reaches score 150. Threshold for `[ALERT]` is 80, so the
 - Protect to a private executable region (RW→RX, R→RX) → `+25` (`+40` if a write was already observed on the same chain)
 - Tiny private-exec region bonus (≤ 0x1000) → `+10`
 - Thread create where the start address falls in private-exec memory → `+50`
-- (Bonus, not always present) `startMatchesWrite` — the thread's start address matches a region recently written to → adds confidence
+- (Bonus, not always present) `startMatchesWrite` - the thread's start address matches a region recently written to → adds confidence
 
 Reaches alert threshold via the handle + write + thread path (60 → 80 with the protect/region bonus, or via private-exec thread alone).
 
@@ -61,7 +61,7 @@ Reaches alert threshold via the handle + write + thread path (60 → 80 with the
 
 ---
 
-## T1055 — Image-Based Injection
+## T1055 - Image-Based Injection
 
 **Pattern observed.** A source process opens a handle into the target, allocates or maps a memory region, writes a complete PE image (DLL or EXE) into that region instead of raw shellcode, and creates a thread starting at the entry point of the mapped image.
 
@@ -73,7 +73,7 @@ Reaches alert threshold via the handle + write + thread path (60 → 80 with the
 
 The `IMAGE_BASED_INJECTION` technique label is selected when the thread starts in image-mapped memory, distinguishing it from shellcode in private memory.
 
-**Why split this out.** Image-based injection looks innocuous on the surface — image-backed memory is where legitimate DLLs live too. Unlike shellcode injection where MEM_PRIVATE+RX is already suspicious on its own, an image-backed thread is completely normal unless it lands near a region the source process explicitly wrote into. The `startMatchesWrite` check is therefore a hard gate for this technique — the thread event only scores if the start address falls within the range of the most recently written region. Legitimate DLL loading via LoadLibrary never triggers this because no external WriteProcessMemory precedes it.
+**Why split this out.** Image-based injection looks innocuous on the surface - image-backed memory is where legitimate DLLs live too. Unlike shellcode injection where MEM_PRIVATE+RX is already suspicious on its own, an image-backed thread is completely normal unless it lands near a region the source process explicitly wrote into. The `startMatchesWrite` check is therefore a hard gate for this technique - the thread event only scores if the start address falls within the range of the most recently written region. Legitimate DLL loading via LoadLibrary never triggers this because no external WriteProcessMemory precedes it.
 
 ---
 
@@ -92,10 +92,10 @@ The trust gate runs at 60 and 80 boundaries (cheaply, via per-chain cache). It d
 
 ## What's NOT detected
 
-- **DLL Sideloading (T1574.002)** — out of v1 scope. Needs filesystem-side telemetry (minifilter) to detect the abuse pattern (legitimate signed binary loading attacker-controlled DLL from a writable directory). Not implemented.
-- **APC Injection (T1055.004)** — needs an `NtQueueApcThread` user-mode hook (or ETW-TI's APC events). Not implemented.
-- **AtomBombing / Process Doppelgänging** — exotic injection variants relying on transactional NTFS / atom tables. Not in scope; v2+ if ever.
-- **Manual mapping / reflective loading** with no module-mapping events — partial coverage today via private-RX scoring, but not validated against representative samples.
-- **32-bit malware** — see `KNOWN_LIMITATIONS.md`. Kernel callbacks see them; user-mode write/protect telemetry doesn't (DLL is x64-only). AgentTesla detonates cleanly with kernel events visible, but typical hollowing chains don't accumulate enough score to alert.
+- **DLL Sideloading (T1574.002)**  out of v1 scope. Needs filesystem-side telemetry (minifilter) to detect the abuse pattern (legitimate signed binary loading attacker-controlled DLL from a writable directory). Not implemented.
+- **APC Injection (T1055.004)**  needs an `NtQueueApcThread` user-mode hook (or ETW-TI's APC events). Not implemented.
+- **AtomBombing / Process Doppelgänging**  exotic injection variants relying on transactional NTFS / atom tables. Not in scope; v2+ if ever.
+- **Manual mapping / reflective loading** with no module-mapping events  partial coverage today via private-RX scoring, but not validated against representative samples.
+- **32-bit malware**  see `KNOWN_LIMITATIONS.md`. Kernel callbacks see them; user-mode write/protect telemetry doesn't (DLL is x64-only). AgentTesla detonates cleanly with kernel events visible, but typical hollowing chains don't accumulate enough score to alert.
 
 See `KNOWN_LIMITATIONS.md` for the full inventory and what would close each gap.
