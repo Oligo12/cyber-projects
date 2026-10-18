@@ -32,7 +32,7 @@ A third log line, `[TRUST_BYPASS]`, records when a chain that *would* have alert
 - Parent-to-child write bonus (the hollowing-specific signature) → `+40`
 - `NtResumeThread` on the child's thread within 5 s of the write → `+50`
 
-A clean hollowing chain reaches score 150. The alert can come from two events: the resume (which only scores if a write was seen first), or the child's thread event, if its start address now points into unmapped memory because the original image was hollowed out. If neither arrives, the chain stops at a `[SUSPICIOUS]` line.
+A clean hollowing chain reaches score 150. The alert can come from two events: the resume (which only scores if a write was seen first), or the child's thread event, if its start address now points into unmapped memory because the original image was hollowed out (`+50`). If neither arrives, the chain stops at a `[SUSPICIOUS]` line.
 
 **Why this works.** The parent-child relationship matters. A normal `CreateProcess(CREATE_SUSPENDED)` followed by `ResumeThread` is part of the legitimate Windows process-launch path; what makes it hollowing is that the parent *writes into the child between create and resume.* That write is what flips the chain from "normal launch" to "PROCESS_HOLLOWING." The EDR never reads the suspended flag directly. It infers it: a parent only resumes a thread in its own freshly created child if that thread was created suspended.
 
@@ -51,9 +51,9 @@ A clean hollowing chain reaches score 150. The alert can come from two events: t
 - Protect to a private executable region (RW→RX, R→RX) → `+25` (`+40` if a write was already observed on the same chain)
 - Tiny private-exec region bonus (≤ 0x1000) → `+10`
 - Thread create where the start address falls in private-exec memory → `+50`
-- (Bonus, not always present) `startMatchesWrite` - the thread's start address matches a region recently written to → adds confidence
+- (Bonus, not always present) `startMatchesWrite`: the thread's start address matches a region recently written to → `+40`
 
-Reaches alert threshold via the handle + write + thread path (60 → 80 with the protect/region bonus, or via private-exec thread alone).
+Typical path: handle + write + private-exec thread = 100. When the write is not visible (as with the explorer sample), handle + private-exec thread + tiny-region bonus still reaches 80.
 
 **Why "tiny region" matters.** Legitimate code allocations are usually larger than a single page. Shellcode plants are commonly 200-800 bytes. A private executable region under 4KB is a strong shellcode signal even before correlating with anything else.
 
@@ -72,6 +72,8 @@ Reaches alert threshold via the handle + write + thread path (60 → 80 with the
 - Thread create where start address falls in an image-backed region **and** within the previously written region → +30
 
 The `IMAGE_BASED_INJECTION` technique label is selected when the thread starts in image-mapped memory, distinguishing it from shellcode in private memory.
+
+**Validated against:** no dedicated malware sample yet. The scoring path was observed on legitimate Windows behavior (the `MusNotification.exe` chains in [`evidence/trust-bypass.md`](evidence/trust-bypass.md)), which the trust gate suppressed.
 
 **Why split this out.** Image-based injection looks innocuous on the surface - image-backed memory is where legitimate DLLs live too. Unlike shellcode injection where MEM_PRIVATE+RX is already suspicious on its own, an image-backed thread is completely normal unless it lands near a region the source process explicitly wrote into. The `startMatchesWrite` check is therefore a hard gate for this technique - the thread event only scores if the start address falls within the range of the most recently written region. Legitimate DLL loading via LoadLibrary never triggers this because no external WriteProcessMemory precedes it.
 
