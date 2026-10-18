@@ -4,7 +4,7 @@
 
 For full sample analysis see [malware-analysis/SnakeKeylogger/Report.md](../../malware-analysis/SnakeKeylogger/Report.md).
 
-**Result.** Across three detonations of `snake.ps1`, the EDR fired **17 alerts** on the `PowerShell → Aspnet_compiler.exe` hollowing chain - every host process the watchdog spawned was caught. Each `Aspnet_compiler.exe` instance is a separate injection chain from the EDR's perspective, with its own `INJECT_STATE` slot.                                                                                                                                                                                                          
+**Result.** Across three detonations of `snake.ps1`, the EDR fired **17 alerts** on the `PowerShell → Aspnet_compiler.exe` hollowing chain. Hosts that exited before their chain completed stay at the `[SUSPICIOUS]` level instead (see below). Each `Aspnet_compiler.exe` instance is a separate injection chain from the EDR's perspective, with its own `INJECT_STATE` slot.                                                                                                                                                                                                          
 The same detonation runs also produced false-positive ALERTs on `powershell.exe(parent) → powershell.exe(child)` parent-child relationships unrelated to the malicious chain, see [KNOWN_LIMITATIONS.md](../KNOWN_LIMITATIONS.md#powershell-parent-child-chains-can-produce-false-positive-alerts). The genuine `powershell → Aspnet_compiler.exe` hollowing chain shown below is detected correctly; the parent-child PowerShell FPs are spurious and additional.
 
 ---
@@ -25,14 +25,13 @@ Representative window from the first detonation. The PowerShell loader (PID 2692
 [ALERT] Remote Injection | src=powershell.exe(2692) dst=Aspnet_compiler.exe(7668) technique=PROCESS_HOLLOWING confidence=HIGH score=180
 ```
 
-The `[SUSPICIOUS]` lines record cases where the chain accumulated handle + write primitives (score 60) but the alert-triggering thread/resume primitive arrived just under the alerting threshold. Many of those `[SUSPICIOUS]` chains went on to alert as the host process was hollowed; some were short-lived hosts that exited before the chain completed and remain captured at the SUSPICIOUS-only level - exactly the forensic-trail use case the SUSPICIOUS gate exists for.
+The `[SUSPICIOUS]` lines are chains where handle and write were seen (score 60) but no execution event had arrived yet. Many of those chains went on to alert once the host was hollowed and resumed; some were short-lived hosts that exited before the chain completed and remain captured at the SUSPICIOUS-only level - exactly the forensic-trail use case the SUSPICIOUS gate exists for.
 
 ---
 
 ## What this excerpt shows
 
-- **17 `Aspnet_compiler.exe` host processes hollowed across 3 detonations** - every single one detected. Score variance (120–180) reflects which combination of handle/write/protect/thread/resume primitives accumulated before the chain crossed the alert threshold; all are HIGH confidence.
-- **Score 180** chains hit handle + write + parent-child write bonus + image-exec thread create. **Score 120** chains land just over threshold via handle + write + thread.
+- **17 alerts on `Aspnet_compiler.exe` hosts across 3 detonations**, all HIGH confidence. Score variance (120-180) reflects which primitives were captured before the alerting event. The `[ALERT]` line does not break the score down, so the exact combination per chain is not shown here.
 - The watchdog respawn pattern is visible in the rapid succession of fresh PIDs - this is the loader actively maintaining its hollowed host across the detonation window, exactly as the malware analysis describes.
 
 ---
