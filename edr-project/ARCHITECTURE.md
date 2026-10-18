@@ -52,16 +52,16 @@ The EDR consists of three components:
    │  Loaded into (almost) every  │
    │  userland process.           │
    │  Inline-hooks 3 Nt syscalls  │
-   │  and forwards every call to  │
-   │  the client via the driver   │
-   │  as WRITE/PROTECT/RESUME     │
-   │  events.                     │
+   │  and forwards cross-process  │
+   │  calls to the client via the │
+   │  driver as WRITE/PROTECT/    │
+   │  RESUME events.              │
    └──────────────────────────────┘
 ```
 
 Three components, three roles:
 
-- **Kernel driver:** broad telemetry (process / thread / image / handle) at zero performance cost, surfaces it without bias toward a specific detection.
+- **Kernel driver:** broad telemetry (process / thread / image / handle) with low overhead, surfaces it without bias toward a specific detection.
 - **Userland client:** orchestrates everything - drains kernel events, runs detection logic, manages chain state, fires alerts, manages the hook DLL.
 - **Hook DLL:** fills in the gap kernel callbacks can't cover by themselves: per-syscall write/protect/resume granularity, in the address space of the calling process.
 
@@ -165,15 +165,15 @@ The current model uses these primitives and bonuses (read `usermode/client/detec
 | Handle to remote process opened with dangerous access mask | +20   | `PROCESS_VM_WRITE`, `PROCESS_VM_OPERATION`, `PROCESS_CREATE_THREAD` |
 | Parent-child handle context bonus               | +10   | Source is parent of destination AND destination is recently created |
 | Write to remote process memory                  | +30   | Counted once per chain (via `sawWrite`)                   |
-| Parent → child write (hollowing pattern)        | +50   | Specifically the parent-to-child case; sharply different from one-off writes |
-| Protect to private executable region            | +20   | Counted once per chain                                    |
+| Parent → child write (hollowing pattern)        | +40   | Specifically the parent-to-child case; sharply different from one-off writes |
+| Protect to private executable region            | +25   | Counted once per chain; +15 more if a write was already seen |
 | Tiny private-exec region bonus                  | +10   | Region size ≤ 0x1000 - distinctive of shellcode plants    |
-| Thread create where execution begins            | +50   | Image-exec or private-exec destination (each counted once)|
-| `startMatchesWrite` - thread starts at recently-written address | (bonus) | Nuanced timing match between WRITE and CREATE_THREAD |
-| Resume thread on suspended target               | +50   | The "execute" trigger in process hollowing                |
+| Thread create where execution begins            | +50 / +30 | +50 if the start is in private-exec memory, or in unmapped memory (hollowed image); +30 if image-backed and matching a recent write. Counted once per chain |
+| `startMatchesWrite` - thread starts at recently-written address | +40 | Non-image threads only |
+| Resume a thread in the target within 5 s of a write | +50   | The "execute" trigger in process hollowing                |
 | `lastSeen` timeout (30s of silence)             | -20   | Chains decay to 0 and get cleaned up                      |
 
-A clean shellcode-remote-thread chain reaches the alert threshold via: handle (+20) → write (+30) → thread (+50) = score 100. A clean process-hollowing chain reaches it via: handle (+20) → write (+30) → parent-child write bonus (+50) → resume (+50) = score 150.
+A clean shellcode-remote-thread chain reaches the alert threshold via: handle (+20) → write (+30) → thread (+50) = score 100. A clean process-hollowing chain reaches it via: handle (+20) → parent-child handle bonus (+10) → write (+30) → parent-child write bonus (+40) → resume (+50) = score 150.
 
 **Why thresholds at 60 and 80:**
 
@@ -246,9 +246,9 @@ Many Microsoft system binaries - including `MusNotification.exe`, `ntdll.dll`, m
 2. Enumerate catalogs containing that hash (`CryptCATAdminEnumCatalogFromHash`)
 3. Hand the catalog reference to `WinVerifyTrust` with `WTD_CHOICE_CATALOG`
 
-Catalog entries can use either SHA-1 (legacy) or SHA-256 (modern). A single binary appears in only one. The implementation tries SHA-256 first, falls back to SHA-1 if SHA-256 finds no matching catalog. Both algos silent on success; both silent on failure (the dispatcher return value is the signal).
+Catalog entries can use either SHA-1 (legacy) or SHA-256 (modern). The implementation tries SHA-256 first, falls back to SHA-1 if SHA-256 finds no matching catalog. Both algos silent on success; both silent on failure (the dispatcher return value is the signal).
 
-Catalog support was deliberately added because the first version of the trust subsystem used embedded verification only - and during validation it became clear that *most of System32 fails embedded verify*. Skipping catalog support would have meant the trust subsystem only protected against FPs from a third of system binaries. Implementing catalog support raised that to "essentially all of them."
+Catalog support was deliberately added because the first version of the trust subsystem used embedded verification only - and during validation it became clear that *most of System32 fails embedded verify*. Without catalog support, the trust subsystem would have missed most signed System32 binaries.
 
 ### Caching
 
@@ -277,9 +277,9 @@ For processes created *after* startup, the client tracks `PROCESS_CREATE` events
 
 ### Inline trampoline hooks
 
-The hook implementation patches the first few bytes of each target syscall with a 14-byte absolute jump (`FF 25 00 00 00 00 + 8-byte address`) into the hook handler. The displaced bytes are copied into a separately-allocated trampoline along with a tail jump back into the original function past the patch site, so the handler can call the original without recursing into itself.
+The hook implementation patches the first bytes of each target syscall with a 12-byte absolute jump (`mov rax, <hook>; jmp rax`) into the hook handler. The patched region is at least 14 bytes, rounded up to a whole instruction using the Zydis decoder, and the leftover bytes are filled with NOPs. The displaced bytes are copied into a separately-allocated trampoline along with a tail jump back into the original function past the patch site, so the handler can call the original without recursing into itself.
 
-Reentrancy is managed via per-thread guard flags: when the hook handler itself calls into APIs that might reach the hooked syscall (logging, e.g.), the guard prevents re-entry. The trampoline path bypasses the patch entirely, so calling `forward(...)` from the handler doesn't trigger the hook again.
+Reentrancy is managed via a process-wide guard flag: when the hook handler itself calls into APIs that might reach the hooked syscall (logging, e.g.), the guard prevents re-entry. The flag is deliberately not thread-local: static TLS in a dynamically loaded DLL is not allocated yet while the loader is running, and an early version crashed processes during startup (it broke elevation via `consent.exe`). The tradeoff is that if two threads in one process hit a hook at the same moment, one telemetry event can be dropped. The trampoline path bypasses the patch entirely, so calling `forward(...)` from the handler doesn't trigger the hook again.
 
 This is the same general approach Microsoft Detours uses, and a common approach for user-mode telemetry in EDR-style tools. The implementation here is a from-scratch educational version - Microsoft Detours is the production answer for anyone shipping this for real.
 
@@ -297,7 +297,7 @@ When a process is created, the kernel callback fires with whatever context is av
 
 So the EDRClient queues a `SECCTX_WORK_ITEM` for each new process and retries token resolution on a backoff. `ProcessSecCtxQueue()` runs every main-loop iteration, attempts `OpenProcess` + `OpenProcessToken` + `GetTokenInformation`, and either marks the entry `SecCtxReady` on success or retries with increasing delay. After enough retries, the entry is dropped - most of the time the process has already exited (very short-lived processes hit this path).
 
-This retry pattern matters because chain detection sometimes references the resolved token info (privilege model, integrity level), and if SECCTX wasn't ready in time, the detection would have to operate without it.
+In the current build, nothing consumes the resolved context. The detection rules do not use it (scoring is based on behavior alone), and the `PROC_CREATE` log line, the only place these fields are printed, is written right after the work item is queued, so it shows `?` before resolution finishes. See `KNOWN_LIMITATIONS.md`.
 
 ---
 
