@@ -23,7 +23,7 @@ In practice: AgentTesla detonates cleanly under the current build with kernel-le
 
 ## Hook injection skip list is filename-substring matched
 
-`output.cpp` (and related sites) maintains a list of process names that don't get the hook DLL injected. The match is currently a filename substring check, so a renamed `evil.exe → explorer.exe` placed anywhere on disk would dodge hook injection.
+`output.cpp` (and related sites) maintains a list of process names that don't get the hook DLL injected. The match is an exact filename comparison (name only, no path), so a renamed `evil.exe → explorer.exe` placed anywhere on disk would dodge hook injection.
 
 Severity is moderate, not severe: kernel callbacks still see these processes regardless of name. Hook bypass costs the EDR write/protect visibility on that specific process, not all visibility.
 
@@ -117,7 +117,7 @@ Current build detects three injection techniques with high confidence:
 
 - **Process Hollowing** (T1055.012)
 - **Shellcode Remote Thread** (T1055)
-- **Image-Based Injection**
+- **Image-Based Injection** (T1055)
 
 Out of scope for v1:
 
@@ -151,7 +151,7 @@ This is intentional scope, not oversight. Response involves a different threat m
 
 ## Development context
 
-This project was built solo over approximately two months as a learning exercise and portfolio piece, with AI-assisted iteration (see README). Architectural decisions, malware sample selection, and validation methodology were driven by the author; implementation was iterative collaboration. Each detection layer was empirically validated against real malware samples before moving to the next.
+This project was built solo over approximately two months as a learning exercise and portfolio piece, with AI-assisted iteration (see README). Architectural decisions, malware sample selection, and validation methodology were driven by the author; implementation was iterative collaboration. Process hollowing and shellcode injection were validated against real malware samples; image-based injection has not been validated against a malware sample yet.
 
 Some of the limitations above reflect deliberate scoping choices (e.g., not implementing ETW-TI because the signing requirement is structural, not technical). Others reflect things that were out of scope for v1 (e.g., minifilter, WFP). 
 
@@ -180,3 +180,7 @@ The skip list (kernel pseudo-processes, structurally-essential system processes,
 ### Driver init silent partial-failure
 
 In `DriverEntry`, if `PsSetCreateProcessNotifyRoutineEx` or `PsSetLoadImageNotifyRoutine` fail to register, the driver logs the failure via `DbgPrint` but still returns `STATUS_SUCCESS` and proceeds. The result is a driver that loads with degraded telemetry and gives the operator no clear signal that something is wrong. Should fail loudly - either return the failing status, or at minimum mark the partial-failure state in a queryable way.
+
+### SECCTX is resolved but never consumed
+
+The client resolves each new process's security context (integrity level, elevation type, token type, privileges) on a retry queue, but nothing reads the result. The detection rules don't use it, and the `PROC_CREATE` log line prints these fields before resolution has finished, so they appear as `?`. Fix: emit a separate log line when resolution completes, and consider using integrity level as a scoring input (for example, a medium-integrity process injecting into a high-integrity one).
