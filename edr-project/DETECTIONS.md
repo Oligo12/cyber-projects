@@ -14,7 +14,7 @@ This document lists what the EDR detects, mapped to MITRE ATT&CK where applicabl
 
 All three fire as `[ALERT] Remote Injection | … technique=<name> confidence=HIGH score=<N>` once the chain crosses the score-80 threshold (see `ARCHITECTURE.md` §4 for scoring model).
 
-A second log severity, `[SUSPICIOUS]`, fires at score-60 to leave a forensic trail when execution is missed (direct syscalls, hook bypass, race conditions). One SUSPICIOUS line per chain  not per primitive event.
+A second log severity, `[SUSPICIOUS]`, fires at score-60 to leave a forensic trail when execution is missed (direct syscalls, hook bypass, race conditions). One SUSPICIOUS line per chain, not per primitive event.
 
 A third log line, `[TRUST_BYPASS]`, records when a chain that *would* have alerted was suppressed by the trust subsystem because the source was a signed system binary. This is intentional: silent suppression is bad practice; recording the suppression keeps the audit trail.
 
@@ -26,15 +26,15 @@ A third log line, `[TRUST_BYPASS]`, records when a chain that *would* have alert
 
 **How it's detected.** Score accumulation across the chain:
 
-- Handle to suspended child with dangerous access mask → `+20`
+- Handle to target with dangerous access mask → `+20`
 - Parent-to-child handle context bonus (parent → recently-created child) → `+10`
 - Write into child's memory → `+30`
 - Parent-to-child write bonus (the hollowing-specific signature) → `+40`
-- `NtResumeThread` on the suspended target → `+50`
+- `NtResumeThread` on the child's thread within 5 s of the write → `+50`
 
 A clean hollowing chain reaches score 150. Threshold for `[ALERT]` is 80, so the alert fires reliably even with one or two missed primitives.
 
-**Why this works.** The parent-child relationship matters. A normal `CreateProcess(CREATE_SUSPENDED)` followed by `ResumeThread` is part of the legitimate Windows process-launch path; what makes it hollowing is that the parent *writes into the child between create and resume.* That write is what flips the chain from "normal launch" to "PROCESS_HOLLOWING."
+**Why this works.** The parent-child relationship matters. A normal `CreateProcess(CREATE_SUSPENDED)` followed by `ResumeThread` is part of the legitimate Windows process-launch path; what makes it hollowing is that the parent *writes into the child between create and resume.* That write is what flips the chain from "normal launch" to "PROCESS_HOLLOWING." The EDR never reads the suspended flag directly. It infers it: a parent only resumes a thread in its own freshly created child if that thread was created suspended.
 
 **Validated against:** SnakeKeylogger PowerShell variant injecting into `Aspnet_compiler.exe`. Each `Aspnet_compiler.exe` instance produces an independent alert.
 
@@ -92,10 +92,10 @@ The trust gate runs at 60 and 80 boundaries (cheaply, via per-chain cache). It d
 
 ## What's NOT detected
 
-- **DLL Sideloading (T1574.002)**  out of v1 scope. Needs filesystem-side telemetry (minifilter) to detect the abuse pattern (legitimate signed binary loading attacker-controlled DLL from a writable directory). Not implemented.
-- **APC Injection (T1055.004)**  needs an `NtQueueApcThread` user-mode hook (or ETW-TI's APC events). Not implemented.
-- **AtomBombing / Process Doppelgänging**  exotic injection variants relying on transactional NTFS / atom tables. Not in scope; v2+ if ever.
-- **Manual mapping / reflective loading** with no module-mapping events  partial coverage today via private-RX scoring, but not validated against representative samples.
-- **32-bit malware**  see `KNOWN_LIMITATIONS.md`. Kernel callbacks see them; user-mode write/protect telemetry doesn't (DLL is x64-only). AgentTesla detonates cleanly with kernel events visible, but typical hollowing chains don't accumulate enough score to alert.
+- **DLL Sideloading (T1574.002)**: out of v1 scope. Needs filesystem-side telemetry (minifilter) to detect the abuse pattern (legitimate signed binary loading attacker-controlled DLL from a writable directory). Not implemented.
+- **APC Injection (T1055.004)**: needs an `NtQueueApcThread` user-mode hook (or ETW-TI's APC events). Not implemented.
+- **AtomBombing / Process Doppelgänging**: exotic injection variants relying on transactional NTFS / atom tables. Not in scope; v2+ if ever.
+- **Manual mapping / reflective loading** with no module-mapping events: partial coverage today via private-RX scoring, but not validated against representative samples.
+- **32-bit malware**: see `KNOWN_LIMITATIONS.md`. Kernel callbacks see them; user-mode write/protect telemetry doesn't (DLL is x64-only). AgentTesla detonates cleanly with kernel events visible, but typical hollowing chains don't accumulate enough score to alert.
 
 See `KNOWN_LIMITATIONS.md` for the full inventory and what would close each gap.
