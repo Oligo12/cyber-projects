@@ -6,7 +6,7 @@ The trust subsystem suppresses them by verifying:
 
 1. Source path is under `C:\Windows\System32\`
 2. Source is not on the LOLBin denylist
-3. Authenticode signature verifies (embedded for `taskhostw`, catalog-signed for `MusNotification` — both paths supported)
+3. Authenticode signature verifies (embedded for `taskhostw`, catalog-signed for `MusNotification` - both paths supported)
 
 When all three layers pass, the chain is bypassed silently and a `[TRUST_BYPASS]` line is written for the audit trail.
 
@@ -35,8 +35,8 @@ One full session, 10 chains bypassed:
 
 - **10 distinct chains, each scoring 130, all suppressed.**
 - Without the trust subsystem these would have produced 10 false-positive `PROCESS_HOLLOWING` alerts in a single session.
-- Each chain shows `handle:1, write:1, thread:1` — **the exact primitive pattern that real malware also produces.** The difference between FP and TP here is NOT the behavior; it's the identity and trust posture of the source binary.
-- The trust gate decision per binary happens once per session (`g_TrustCache` hit thereafter). Nine of the bypasses above came from different `MusNotification.exe` instances — same binary, different PIDs — so the actual `WinVerifyTrust` call ran exactly once.
+- Each chain shows `handle:1, write:1, thread:1` - **the exact primitive pattern that real malware also produces.** The difference between FP and TP here is NOT the behavior; it's the identity and trust posture of the source binary.
+- The trust gate decision per binary happens once per session (`g_TrustCache` hit thereafter). Nine of the bypasses above came from different `MusNotification.exe` instances - same binary, different PIDs - so the actual `WinVerifyTrust` call ran exactly once.
 
 ---
 
@@ -48,4 +48,4 @@ One full session, 10 chains bypassed:
 
 ## Validating this evidence
 
-Compare against a malicious chain with similar primitives in [`explorer-injector-alert.md`](explorer-injector-alert.md) — same primitive pattern, opposite verdict, because the source path differs.
+Compare against a malicious chain with similar primitives in [`explorer-injector-alert.md`](explorer-injector-alert.md) - same primitive pattern, opposite verdict, because the source path differs.
