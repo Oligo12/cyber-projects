@@ -32,7 +32,7 @@ A third log line, `[TRUST_BYPASS]`, records when a chain that *would* have alert
 - Parent-to-child write bonus (the hollowing-specific signature) → `+40`
 - `NtResumeThread` on the child's thread within 5 s of the write → `+50`
 
-A clean hollowing chain reaches score 150. Threshold for `[ALERT]` is 80, so the alert fires reliably even with one or two missed primitives.
+A clean hollowing chain reaches score 150. The alert is raised only on the resume event, and only if a write came first, so write and resume are both required; a missed handle event still alerts (120). If the resume is missed, the chain stops at a `[SUSPICIOUS]` line.
 
 **Why this works.** The parent-child relationship matters. A normal `CreateProcess(CREATE_SUSPENDED)` followed by `ResumeThread` is part of the legitimate Windows process-launch path; what makes it hollowing is that the parent *writes into the child between create and resume.* That write is what flips the chain from "normal launch" to "PROCESS_HOLLOWING." The EDR never reads the suspended flag directly. It infers it: a parent only resumes a thread in its own freshly created child if that thread was created suspended.
 
